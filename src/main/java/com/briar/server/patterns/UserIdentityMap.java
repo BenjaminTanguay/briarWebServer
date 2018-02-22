@@ -1,7 +1,7 @@
 package com.briar.server.patterns;
 
 import com.briar.server.constants.Constants;
-import com.briar.server.exception.UserDeletedException;
+import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.model.User;
 import lombok.NonNull;
 
@@ -41,14 +41,14 @@ public class UserIdentityMap {
         this.identityMap.put(user.getPhoneGeneratedId(), wrapper);
     }
 
-    public synchronized User getUser(@NonNull String userId, @NonNull Constants.LOCK lock) throws UserDeletedException {
+    public synchronized User getUser(@NonNull String userId, @NonNull Constants.LOCK lock) throws ObjectDeletedException {
         if (!doesUserExists(userId)) {
-            throw new UserDeletedException();
+            throw new ObjectDeletedException();
         }
         UserWrapper wrapper = this.identityMap.get(userId);
 
         if (wrapper.isUserToBeDeleted()) {
-            throw new UserDeletedException();
+            throw new ObjectDeletedException();
         }
         switch(lock) {
             case READING:
