@@ -1,8 +1,6 @@
 package com.briar.server.exception;
 
-/**
- * Created by Benjamin on 2018-02-22.
- */
+
 public class ObjectDeletedException extends Exception {
 
     public ObjectDeletedException() { super("The user doesn't exist anymore"); }
