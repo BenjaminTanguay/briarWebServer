@@ -1,4 +1,4 @@
-package com.briar.server.patterns;
+package com.briar.server.patterns.identitymap;
 
 import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
@@ -42,7 +42,7 @@ public class UserContactsIdentityMap {
         this.identityMap.put(user, wrapper);
     }
 
-    public synchronized UserContacts getUserContacts(@NonNull User user, @NonNull Constants.LOCK lock) throws ObjectDeletedException {
+    public synchronized UserContacts getUserContacts(@NonNull User user, @NonNull Constants.Lock lock) throws ObjectDeletedException {
         if (!doesUserContactsExists(user)) {
             throw new ObjectDeletedException();
         }
@@ -52,11 +52,11 @@ public class UserContactsIdentityMap {
             throw new ObjectDeletedException();
         }
         switch(lock) {
-            case READING:
+            case reading:
                 return startReading(wrapper);
-            case WRITING:
+            case writing:
                 return startWriting(wrapper);
-            case DELETING:
+            case deleting:
                 return startDeleting(user, wrapper);
             default:
                 return null;
