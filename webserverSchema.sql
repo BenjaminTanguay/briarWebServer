@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `briar_server`.`users` (
   `phone_generated_id` VARCHAR(64) NOT NULL,
   `password` VARCHAR(64) NOT NULL,
   `ip` VARCHAR(20) NULL DEFAULT NULL,
+  `port` INT(5) UNSIGNED NOT NULL,
   `isActive` TINYINT(1) NOT NULL,
   `created` TIMESTAMP NULL DEFAULT NULL,
   `modified` TIMESTAMP NULL DEFAULT NULL,
