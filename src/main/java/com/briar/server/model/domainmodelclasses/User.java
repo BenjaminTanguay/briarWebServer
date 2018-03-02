@@ -62,7 +62,7 @@ public class User {
         return port;
     }
 
-    public void setIp(int port) {
+    public void setPort(int port) {
         this.port = port;
     }
 

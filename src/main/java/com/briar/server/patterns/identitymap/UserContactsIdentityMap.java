@@ -2,7 +2,6 @@ package com.briar.server.patterns.identitymap;
 
 import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
-import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.domainmodelclasses.UserContacts;
 import lombok.NonNull;
 
@@ -12,7 +11,7 @@ import static java.lang.Thread.yield;
 
 public class UserContactsIdentityMap {
 
-    private IdentityHashMap<User, UserContactsWrapper> identityMap;
+    private IdentityHashMap<String, UserContactsWrapper> identityMap;
 
     private static volatile UserContactsIdentityMap instance;
     private static Object mutex = new Object();
@@ -30,23 +29,23 @@ public class UserContactsIdentityMap {
     }
 
     private UserContactsIdentityMap() {
-        this.identityMap = new IdentityHashMap<User, UserContactsWrapper>();
+        this.identityMap = new IdentityHashMap<String, UserContactsWrapper>();
     }
 
-    public boolean doesUserContactsExists(@NonNull User user) {
-        return this.identityMap.containsKey(user);
+    public boolean doesUserContactsExists(@NonNull String userName) {
+        return this.identityMap.containsKey(userName);
     }
 
-    public void addUserContacts(@NonNull User user, @NonNull UserContacts userContacts) {
+    public void addUserContacts(@NonNull String userName, @NonNull UserContacts userContacts) {
         UserContactsWrapper wrapper = new UserContactsWrapper(userContacts);
-        this.identityMap.put(user, wrapper);
+        this.identityMap.put(userName, wrapper);
     }
 
-    public synchronized UserContacts getUserContacts(@NonNull User user, @NonNull Constants.Lock lock) throws ObjectDeletedException {
-        if (!doesUserContactsExists(user)) {
+    public synchronized UserContacts getUserContacts(@NonNull String userName, @NonNull Constants.Lock lock) throws ObjectDeletedException {
+        if (!doesUserContactsExists(userName)) {
             throw new ObjectDeletedException();
         }
-        UserContactsWrapper wrapper = this.identityMap.get(user);
+        UserContactsWrapper wrapper = this.identityMap.get(userName);
 
         if (wrapper.isUserContactsToBeDeleted()) {
             throw new ObjectDeletedException();
@@ -57,19 +56,19 @@ public class UserContactsIdentityMap {
             case writing:
                 return startWriting(wrapper);
             case deleting:
-                return startDeleting(user, wrapper);
+                return startDeleting(userName, wrapper);
             default:
                 return null;
         }
     }
 
-    public void stopReading(@NonNull User user) {
-        UserContactsWrapper wrapper = this.identityMap.get(user);
+    public void stopReading(@NonNull String userName) {
+        UserContactsWrapper wrapper = this.identityMap.get(userName);
         wrapper.stopReading();
     }
 
-    public void stopWriting(@NonNull User user) {
-        UserContactsWrapper wrapper = this.identityMap.get(user);
+    public void stopWriting(@NonNull String userName) {
+        UserContactsWrapper wrapper = this.identityMap.get(userName);
         wrapper.stopWriting();
     }
 
@@ -83,11 +82,11 @@ public class UserContactsIdentityMap {
         return wrapper.getUserContacts();
     }
 
-    private UserContacts startDeleting(User user, UserContactsWrapper wrapper) {
+    private UserContacts startDeleting(String userName, UserContactsWrapper wrapper) {
         wrapper.startWriting();
         wrapper.startUserContactsDeleting();
         UserContacts userContacts = wrapper.getUserContacts();
-        this.identityMap.remove(user);
+        this.identityMap.remove(userName);
         return userContacts;
     }
 

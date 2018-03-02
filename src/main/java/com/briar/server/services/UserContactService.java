@@ -1,4 +1,4 @@
-package com.briar.server.service;
+package com.briar.server.services;
 
 public class UserContactService {
 

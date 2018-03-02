@@ -3,6 +3,7 @@ package com.briar.server.patterns.unitofwork;
 import com.briar.server.constants.Constants;
 import com.briar.server.exception.DBException;
 import com.briar.server.exception.DataCompromisedException;
+import com.briar.server.services.tasks.ITask;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ import static java.lang.Thread.yield;
 
 public class UnitOfWork {
 
-    private HashMap<String, ArrayList<ICommit>> toPush;
-    private HashMap<String, Stack<ICommit>> toRevert;
+    private HashMap<String, ArrayList<ITask>> toPush;
+    private HashMap<String, Stack<ITask>> toRevert;
     private HashMap<String, CommitLocks> commitLocksCollection;
 
     private static volatile UnitOfWork instance;
@@ -33,25 +34,25 @@ public class UnitOfWork {
     }
 
     private UnitOfWork() {
-        this.toPush = new HashMap<String, ArrayList<ICommit>>();
-        this.toRevert = new HashMap<String, Stack<ICommit>>();
+        this.toPush = new HashMap<String, ArrayList<ITask>>();
+        this.toRevert = new HashMap<String, Stack<ITask>>();
         this.commitLocksCollection = new HashMap<String, CommitLocks>();
     }
 
-    public void registerCommit(String transactionId, ICommit toBeCommitted) {
+    public void registerCommit(String transactionId, ITask toBeCommitted) {
         startReading(transactionId);
-        ArrayList<ICommit> commitList = getCommitList(transactionId);
+        ArrayList<ITask> commitList = getCommitList(transactionId);
         commitList.add(toBeCommitted);
         stopReading(transactionId);
     }
 
     public synchronized void pushCommit(String transactionId) throws DataCompromisedException {
         startWriting(transactionId);
-        ArrayList<ICommit> commitList = getCommitList(transactionId);
-        Stack<ICommit> revertList = getRollbackList(transactionId);
+        ArrayList<ITask> commitList = getCommitList(transactionId);
+        Stack<ITask> revertList = getRollbackList(transactionId);
 
         try {
-            for (ICommit commit : commitList) {
+            for (ITask commit : commitList) {
                 commit.commitDB();
                 revertList.push(commit);
                 commit.commitIdentityMap();
@@ -66,18 +67,18 @@ public class UnitOfWork {
     }
 
     public synchronized void revertCommit(String transactionId, Constants.LastCommitActionSuccessful commitStatus) throws DataCompromisedException {
-        Stack<ICommit> revertList = getRollbackList(transactionId);
+        Stack<ITask> revertList = getRollbackList(transactionId);
         try {
 
             // Exception occured while trying to push stuff to the database
             if (commitStatus == Constants.LastCommitActionSuccessful.database) {
-                ICommit firstCommitToRevert = revertList.pop();
+                ITask firstCommitToRevert = revertList.pop();
                 firstCommitToRevert.revertDB();
             }
 
             // All other exceptions
             while(!revertList.isEmpty()){
-                ICommit commit = revertList.pop();
+                ITask commit = revertList.pop();
                 commit.revertDB();
                 commit.revertIdentityMap();
             }
@@ -86,23 +87,23 @@ public class UnitOfWork {
         }
     }
 
-    private ArrayList<ICommit> getCommitList(String transactionId) {
-        ArrayList<ICommit> listOfCommits;
+    private ArrayList<ITask> getCommitList(String transactionId) {
+        ArrayList<ITask> listOfCommits;
         if (this.toPush.containsKey(transactionId)) {
             listOfCommits = this.toPush.get(transactionId);
         } else {
-            listOfCommits = new ArrayList<ICommit>();
+            listOfCommits = new ArrayList<ITask>();
             this.toPush.put(transactionId, listOfCommits);
         }
         return listOfCommits;
     }
 
-    private Stack<ICommit> getRollbackList(String transactionId) {
-        Stack<ICommit> rollbackStack;
+    private Stack<ITask> getRollbackList(String transactionId) {
+        Stack<ITask> rollbackStack;
         if (this.toRevert.containsKey(transactionId)) {
             rollbackStack = this.toRevert.get(transactionId);
         } else {
-            rollbackStack = new Stack<ICommit>();
+            rollbackStack = new Stack<ITask>();
             this.toRevert.put(transactionId, rollbackStack);
         }
         return rollbackStack;

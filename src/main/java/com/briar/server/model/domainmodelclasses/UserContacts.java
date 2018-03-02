@@ -1,6 +1,6 @@
 package com.briar.server.model.domainmodelclasses;
 
-import com.briar.server.exception.UserContactAlreadyExistsException;
+import com.briar.server.exception.ObjectAlreadyExistsException;
 import com.briar.server.exception.UserContactDoesntExistsException;
 
 import java.util.ArrayList;
@@ -11,13 +11,12 @@ public class UserContacts {
     private HashMap<String, UserContact> contacts;
 
     public UserContacts() {
-        // HashMap<User, UserContact> contactList = new HashMap<User, UserContact>();
         this.contacts = new HashMap<String, UserContact>();
     }
 
-    public void addContact(String userName, UserContact userContact) throws UserContactAlreadyExistsException {
+    public void addContact(String userName, UserContact userContact) throws ObjectAlreadyExistsException {
         if (this.contacts.containsKey(userName)) {
-            throw new UserContactAlreadyExistsException();
+            throw new ObjectAlreadyExistsException();
         }
         this.contacts.put(userName, userContact);
     }
@@ -54,19 +53,19 @@ public class UserContacts {
     }
 
 
-//    public void addUserContact(UserContact userContact) throws UserContactAlreadyExistsException {
+//    public void addUserContact(UserContact userContact) throws ObjectAlreadyExistsException {
 //        User firstUser = userContact.getFirstUser();
 //        User secondUser = userContact.getSecondUser();
 //        addUserHelper(firstUser, userContact);
 //        addUserHelper(secondUser, userContact);
 //    }
 //
-//    private void addUserHelper(User user, UserContact userContact) throws UserContactAlreadyExistsException {
+//    private void addUserHelper(User user, UserContact userContact) throws ObjectAlreadyExistsException {
 //        User otherUser = userContact.getOtherUser(user);
 //        if (this.contacts.containsKey(user)) {
 //            HashMap<User, UserContact> contactList = this.contacts.get(user);
 //            if (contactList.containsKey(otherUser)) {
-//                throw new UserContactAlreadyExistsException();
+//                throw new ObjectAlreadyExistsException();
 //            } else {
 //
 //            }
