@@ -2,8 +2,8 @@ package com.briar.server.patterns.identitymap;
 
 import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
-import com.briar.server.model.User;
-import com.briar.server.model.UserContacts;
+import com.briar.server.model.domainmodelclasses.User;
+import com.briar.server.model.domainmodelclasses.UserContacts;
 import lombok.NonNull;
 
 import java.util.IdentityHashMap;

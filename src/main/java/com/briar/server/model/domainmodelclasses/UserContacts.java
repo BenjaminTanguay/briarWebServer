@@ -1,4 +1,4 @@
-package com.briar.server.model;
+package com.briar.server.model.domainmodelclasses;
 
 import com.briar.server.exception.UserContactAlreadyExistsException;
 import com.briar.server.exception.UserContactDoesntExistsException;
@@ -8,32 +8,32 @@ import java.util.HashMap;
 
 public class UserContacts {
 
-    private HashMap<User, UserContact> contacts;
+    private HashMap<String, UserContact> contacts;
 
     public UserContacts() {
         // HashMap<User, UserContact> contactList = new HashMap<User, UserContact>();
-        this.contacts = new HashMap<User, UserContact>();
+        this.contacts = new HashMap<String, UserContact>();
     }
 
-    public void addContact(User user, UserContact userContact) throws UserContactAlreadyExistsException {
-        if (this.contacts.containsKey(user)) {
+    public void addContact(String userName, UserContact userContact) throws UserContactAlreadyExistsException {
+        if (this.contacts.containsKey(userName)) {
             throw new UserContactAlreadyExistsException();
         }
-        this.contacts.put(user, userContact);
+        this.contacts.put(userName, userContact);
     }
 
-    public UserContact removeContact(User user) throws UserContactDoesntExistsException {
-        if (!this.contacts.containsKey(user)) {
+    public UserContact removeContact(String userName) throws UserContactDoesntExistsException {
+        if (!this.contacts.containsKey(userName)) {
             throw new UserContactDoesntExistsException();
         }
-        return this.contacts.remove(user);
+        return this.contacts.remove(userName);
     }
 
-    public ArrayList<User> getAllValidContacts(User user) throws UserContactDoesntExistsException {
-        if (!this.contacts.containsKey(user)) {
+    public ArrayList<String> getAllValidContacts(String userName) throws UserContactDoesntExistsException {
+        if (!this.contacts.containsKey(userName)) {
             throw new UserContactDoesntExistsException();
         }
-        ArrayList<User> userList = new ArrayList<User>();
+        ArrayList<String> userList = new ArrayList<String>();
         this.contacts.forEach((userAsKey, userContactAsValue) -> {
             if (userContactAsValue.isContactBilateral()) {
                 userList.add(userAsKey);
@@ -42,11 +42,11 @@ public class UserContacts {
         return userList;
     }
 
-    public ArrayList<User> getAllContacts(User user) throws UserContactDoesntExistsException {
-        if (!this.contacts.containsKey(user)) {
+    public ArrayList<String> getAllContacts(String userName) throws UserContactDoesntExistsException {
+        if (!this.contacts.containsKey(userName)) {
             throw new UserContactDoesntExistsException();
         }
-        ArrayList<User> userList = new ArrayList<User>();
+        ArrayList<String> userList = new ArrayList<String>();
         this.contacts.forEach((userAsKey, userContactAsValue) -> {
             userList.add(userAsKey);
         });
