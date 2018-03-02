@@ -29,13 +29,13 @@ CREATE TABLE IF NOT EXISTS `briar_server`.`users` (
   `password` VARCHAR(64) NOT NULL,
   `ip` VARCHAR(20) NULL DEFAULT NULL,
   `port` INT(5) UNSIGNED NOT NULL,
-  `isActive` TINYINT(1) NOT NULL,
+  `is_active` TINYINT(1) NOT NULL,
   `created` TIMESTAMP NULL DEFAULT NULL,
   `modified` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-  UNIQUE INDEX `phone_generated_id_UNIQUE` (`phone_generated_id` ASC))
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = InnoDB
+AUTO_INCREMENT = 10
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `briar_server`.`contacts` (
   `first_user_contact_acceptance` TINYINT(1) NOT NULL,
   `second_user` INT(10) UNSIGNED NOT NULL,
   `second_user_contact_acceptance` TINYINT(1) NOT NULL,
-  `isActive` TINYINT(1) NOT NULL,
+  `is_active` TINYINT(1) NOT NULL,
   `created` TIMESTAMP NULL DEFAULT NULL,
   `modified` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `briar_server`.`contacts` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 6
 DEFAULT CHARACTER SET = utf8;
 
 
