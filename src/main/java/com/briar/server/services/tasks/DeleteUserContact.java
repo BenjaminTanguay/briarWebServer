@@ -5,12 +5,22 @@ import com.briar.server.exception.DBException;
 import com.briar.server.exception.ObjectAlreadyExistsException;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
+import com.briar.server.handler.UserContactsHandler;
+import com.briar.server.model.domainmodelclasses.UserContact;
 
-public class DeleteUserContact implements ITask {
+public class DeleteUserContact extends AbstractUserContactTask {
+
+    public DeleteUserContact(UserContact userContactToDelete, UserContactsHandler handler) {
+        super(userContactToDelete, handler);
+    }
 
     @Override
     public void commitDB() throws DBException {
-
+        try {
+            this.userContactMapper.removeSpecificUserContact(this.userContact);
+        } catch (Exception e) {
+            throw new DBException(e.getMessage());
+        }
     }
 
     @Override
@@ -20,7 +30,11 @@ public class DeleteUserContact implements ITask {
 
     @Override
     public void revertDB() throws DBException {
-
+        try {
+            this.userContactMapper.addNewUserContact(this.userContact);
+        } catch (Exception e) {
+            throw new DBException(e.getMessage());
+        }
     }
 
     @Override

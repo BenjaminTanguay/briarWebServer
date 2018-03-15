@@ -1,29 +1,46 @@
 package com.briar.server.services.tasks;
 
-import com.briar.server.exception.DBException;
-import com.briar.server.exception.ObjectAlreadyExistsException;
-import com.briar.server.exception.ObjectDeletedException;
-import com.briar.server.exception.UserContactDoesntExistsException;
+import com.briar.server.exception.*;
+import com.briar.server.handler.UserHandler;
+import com.briar.server.model.domainmodelclasses.User;
 
-public class ModifyUser implements ITask {
+public class ModifyUser extends AbstractUserTask {
+
+    private User oldUser;
+    private UserHandler oldUserHandler;
+
+    public ModifyUser(User newUser, User oldUser, UserHandler handler, UserHandler oldUserHandler) {
+        super(newUser, handler);
+        this.oldUser = oldUser;
+        this.oldUserHandler = oldUserHandler;
+    }
+
 
     @Override
     public void commitDB() throws DBException {
-
+        try {
+            userMapper.modifyUser(this.user);
+        } catch (Exception e) {
+            throw new DBException(e.getMessage());
+        }
     }
 
     @Override
     public void commitIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
-
+        this.handler.modify();
     }
 
     @Override
     public void revertDB() throws DBException {
-
+        try {
+            userMapper.modifyUser(this.oldUser);
+        } catch (Exception e) {
+            throw new DBException(e.getMessage());
+        }
     }
 
     @Override
-    public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
-
+    public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException, IncompleteObjectException {
+        this.oldUserHandler.modify();
     }
 }

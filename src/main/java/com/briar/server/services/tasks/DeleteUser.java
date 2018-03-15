@@ -4,26 +4,38 @@ import com.briar.server.exception.DBException;
 import com.briar.server.exception.ObjectAlreadyExistsException;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
+import com.briar.server.handler.UserHandler;
+import com.briar.server.model.domainmodelclasses.User;
 
-public class DeleteUser implements ITask {
+public class DeleteUser extends AbstractUserTask {
+
+    public DeleteUser(User userToDelete, UserHandler handler) {
+        super(userToDelete, handler);
+    }
 
     @Override
     public void commitDB() throws DBException {
-
+        try {
+            this.userMapper.removeUser(this.user);
+        } catch (Exception e) {
+            throw new DBException(e.getMessage());
+        }
     }
 
     @Override
     public void commitIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
-
+        this.handler.remove();
     }
 
     @Override
     public void revertDB() throws DBException {
-
+        //TODO Implement the revert algo. Probably need to compile a list of things that are going to be modified by
+        // the commit and revert them afterwards.
     }
 
     @Override
     public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
-
+        //TODO Implement the revert algo. Probably need to compile a list of things that are going to be modified by
+        // the commit and revert them afterwards.
     }
 }

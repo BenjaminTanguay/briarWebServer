@@ -1,30 +1,19 @@
 package com.briar.server.services.tasks;
 
-import com.briar.server.constants.Constants;
 import com.briar.server.exception.*;
-import com.briar.server.mapper.UserMapper;
+import com.briar.server.handler.UserHandler;
 import com.briar.server.model.domainmodelclasses.User;
-import com.briar.server.patterns.identitymap.UserIdentityMap;
 
-import javax.inject.Inject;
+public class InsertNewUser extends AbstractUserTask {
 
-public class InsertNewUser implements ITask {
-
-    private User userToAdd;
-    private UserIdentityMap map;
-
-    @Inject
-    private UserMapper userMapper;
-
-    public InsertNewUser(User userToAdd) {
-        this.userToAdd = userToAdd;
-        this.map = UserIdentityMap.getInstance();
+    public InsertNewUser(User userToAdd, UserHandler handler) {
+        super(userToAdd, handler);
     }
 
     @Override
     public void commitDB() throws DBException {
         try {
-            userMapper.addNewUser(this.userToAdd);
+            userMapper.addNewUser(this.user);
         } catch (Exception e) {
             throw new DBException(e.getMessage());
         }
@@ -32,20 +21,13 @@ public class InsertNewUser implements ITask {
 
     @Override
     public void commitIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException, IncompleteObjectException {
-        String userName = this.userToAdd.getPhoneGeneratedId();
-        if (userName == null) {
-            throw new IncompleteObjectException(this.userToAdd.toString());
-        }
-        if (this.map.doesUserExists(userName)) {
-            throw new ObjectAlreadyExistsException();
-        }
-        this.map.addUser(this.userToAdd);
+        handler.add();
     }
 
     @Override
     public void revertDB() throws DBException {
         try {
-            userMapper.removeUser(this.userToAdd);
+            userMapper.removeUser(this.user);
         } catch (Exception e) {
             throw new DBException(e.getMessage());
         }
@@ -53,13 +35,6 @@ public class InsertNewUser implements ITask {
 
     @Override
     public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException, IncompleteObjectException {
-        String userName = this.userToAdd.getPhoneGeneratedId();
-        if (userName == null) {
-            throw new IncompleteObjectException(this.userToAdd.toString());
-        }
-        if (this.map.doesUserExists(userName)) {
-            this.map.getUser(userName, Constants.Lock.deleting);
-            this.map.stopWriting(userName);
-        }
+        handler.remove();
     }
 }
