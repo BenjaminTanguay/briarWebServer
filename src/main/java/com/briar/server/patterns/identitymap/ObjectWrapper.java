@@ -48,7 +48,9 @@ public class ObjectWrapper<Payload> {
         }
 
         public synchronized void stopReading() {
-            --this.nbObjectReading;
+            if (this.nbObjectReading > 0) {
+                --this.nbObjectReading;
+            }
         }
 
         public synchronized void stopWriting() {
