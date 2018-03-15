@@ -13,6 +13,10 @@ public class UserContacts {
         this.contacts = new HashMap<String, UserContact>();
     }
 
+    public boolean isEmpty() {
+        return this.contacts.isEmpty();
+    }
+
     public boolean contactExists(String userName) {
         return this.contacts.containsKey(userName);
     }
@@ -58,29 +62,4 @@ public class UserContacts {
         });
         return userList;
     }
-
-
-//    public void addUserContact(UserContact userContact) throws ObjectAlreadyExistsException {
-//        User firstUser = userContact.getFirstUserName();
-//        User secondUser = userContact.getSecondUserName();
-//        addUserHelper(firstUser, userContact);
-//        addUserHelper(secondUser, userContact);
-//    }
-//
-//    private void addUserHelper(User user, UserContact userContact) throws ObjectAlreadyExistsException {
-//        User otherUser = userContact.getOtherUser(user);
-//        if (this.contacts.containsKey(user)) {
-//            HashMap<User, UserContact> contactList = this.contacts.get(user);
-//            if (contactList.containsKey(otherUser)) {
-//                throw new ObjectAlreadyExistsException();
-//            } else {
-//
-//            }
-//        } else {
-//            HashMap<User, UserContact> newContactList = new HashMap<User, UserContact>();
-//            newContactList.put(otherUser, userContact);
-//            this.contacts.put(user, newContactList);
-//        }
-//    }
-
 }
