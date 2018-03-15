@@ -52,8 +52,14 @@ public class UserService {
         return isAuthenticated;
     }
 
-    public boolean doesUserExists(String userName) throws ObjectDeletedException {
-        User user = readUser(userName);
+    public boolean doesUserExists(String userName) {
+        User user = null;
+        try {
+            user = readUser(userName);
+        } catch (ObjectDeletedException e) {
+            // We don't need to do anything. The user doesn't exist anymore. Value above is null so the method will
+            // return false
+        }
         return user != null;
     }
 
@@ -92,6 +98,11 @@ public class UserService {
         return user;
     }
 
+    /**
+     * To add a user to the DB and the IdentityMap
+     * @param user
+     * @throws DataCompromisedException
+     */
     public void addUser(User user) throws DataCompromisedException {
         UserHandler userHandler = new UserHandler(user);
         InsertNewUser insertUserTask = new InsertNewUser(user, userHandler);
@@ -100,6 +111,12 @@ public class UserService {
         this.unitOfWork.pushCommit(transactionId);
     }
 
+    /**
+     * To modify a user from the DB and the IdentityMap
+     * @param user
+     * @throws ObjectDeletedException
+     * @throws DataCompromisedException
+     */
     public void modifyUser(User user) throws ObjectDeletedException, DataCompromisedException {
         String userName = user.getPhoneGeneratedId();
         User oldUser = readUser(userName);
@@ -111,6 +128,12 @@ public class UserService {
         this.unitOfWork.pushCommit(transactionId);
     }
 
+    /**
+     * To remove a user from the DB and the IdentityMap
+     * NOTE: The code this method relies on isn't implemented at the moment.
+     * @param user
+     * @throws DataCompromisedException
+     */
     public void removeUser(User user) throws DataCompromisedException {
         UserHandler userHandler = new UserHandler(user);
         DeleteUser removeUserTask = new DeleteUser(user, userHandler);
