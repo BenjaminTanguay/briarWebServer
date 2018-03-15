@@ -66,7 +66,7 @@ public class UnitOfWork {
         }
     }
 
-    public synchronized void revertCommit(String transactionId, Constants.LastCommitActionSuccessful commitStatus) throws DataCompromisedException {
+    private synchronized void revertCommit(String transactionId, Constants.LastCommitActionSuccessful commitStatus) throws DataCompromisedException {
         Stack<ITask> revertList = getRollbackList(transactionId);
         try {
 
