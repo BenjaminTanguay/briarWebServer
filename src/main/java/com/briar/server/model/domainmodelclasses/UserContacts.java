@@ -1,6 +1,5 @@
 package com.briar.server.model.domainmodelclasses;
 
-import com.briar.server.exception.ObjectAlreadyExistsException;
 import com.briar.server.exception.UserContactDoesntExistsException;
 
 import java.util.ArrayList;
@@ -14,11 +13,19 @@ public class UserContacts {
         this.contacts = new HashMap<String, UserContact>();
     }
 
-    public void addContact(String userName, UserContact userContact) throws ObjectAlreadyExistsException {
-        if (this.contacts.containsKey(userName)) {
-            throw new ObjectAlreadyExistsException();
-        }
+    public boolean contactExists(String userName) {
+        return this.contacts.containsKey(userName);
+    }
+
+    public void addContact(String userName, UserContact userContact) {
         this.contacts.put(userName, userContact);
+    }
+
+    public UserContact getUserContact(String userName) throws UserContactDoesntExistsException {
+        if (!this.contacts.containsKey(userName)) {
+            throw new UserContactDoesntExistsException();
+        }
+        return this.contacts.get(userName);
     }
 
     public UserContact removeContact(String userName) throws UserContactDoesntExistsException {
@@ -54,8 +61,8 @@ public class UserContacts {
 
 
 //    public void addUserContact(UserContact userContact) throws ObjectAlreadyExistsException {
-//        User firstUser = userContact.getFirstUser();
-//        User secondUser = userContact.getSecondUser();
+//        User firstUser = userContact.getFirstUserName();
+//        User secondUser = userContact.getSecondUserName();
 //        addUserHelper(firstUser, userContact);
 //        addUserHelper(secondUser, userContact);
 //    }
