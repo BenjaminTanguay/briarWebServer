@@ -2,23 +2,28 @@ package com.briar.server.model.domainmodelclasses;
 
 public class UserContact {
     private long id;
-    private String firstUser;
+    private String firstUserName;
     private long firstUserId;
     private boolean firstUserContactAcceptance;
-    private String secondUser;
+    private String secondUserName;
     private long secondUserId;
     private boolean secondUserContactAcceptance;
 
-    public UserContact() {
-
-    }
-
-    public UserContact(long id, String firstUser, long firstUserId, boolean firstUserContactAcceptance, String secondUser, long secondUserId, boolean secondUserContactAcceptance) {
-        this.id = id;
-        this.firstUser = firstUser;
+    public UserContact(String firstUserName, long firstUserId, boolean firstUserContactAcceptance, String secondUserName, long secondUserId, boolean secondUserContactAcceptance) {
+        this.firstUserName = firstUserName;
         this.firstUserId = firstUserId;
         this.firstUserContactAcceptance = firstUserContactAcceptance;
-        this.secondUser = secondUser;
+        this.secondUserName = secondUserName;
+        this.secondUserId = secondUserId;
+        this.secondUserContactAcceptance = secondUserContactAcceptance;
+    }
+
+    public UserContact(long id, String firstUserName, long firstUserId, boolean firstUserContactAcceptance, String secondUserName, long secondUserId, boolean secondUserContactAcceptance) {
+        this.id = id;
+        this.firstUserName = firstUserName;
+        this.firstUserId = firstUserId;
+        this.firstUserContactAcceptance = firstUserContactAcceptance;
+        this.secondUserName = secondUserName;
         this.secondUserId = secondUserId;
         this.secondUserContactAcceptance = secondUserContactAcceptance;
     }
@@ -31,12 +36,12 @@ public class UserContact {
         this.id = id;
     }
 
-    public String getFirstUser() {
-        return firstUser;
+    public String getFirstUserName() {
+        return firstUserName;
     }
 
-    public void setFirstUser(String firstUser) {
-        this.firstUser = firstUser;
+    public void setFirstUserName(String firstUserName) {
+        this.firstUserName = firstUserName;
     }
 
     public boolean isFirstUserContactAcceptance() {
@@ -47,12 +52,12 @@ public class UserContact {
         this.firstUserContactAcceptance = firstUserContactAcceptance;
     }
 
-    public String getSecondUser() {
-        return secondUser;
+    public String getSecondUserName() {
+        return secondUserName;
     }
 
-    public void setSecondUser(String secondUser) {
-        this.secondUser = secondUser;
+    public void setSecondUserName(String secondUserName) {
+        this.secondUserName = secondUserName;
     }
 
     public boolean isSecondUserContactAcceptance() {
@@ -80,10 +85,10 @@ public class UserContact {
     }
 
     public String getOtherUser(String user) {
-        if (user.equals(this.firstUser)) {
-            return this.secondUser;
+        if (user.equals(this.firstUserName)) {
+            return this.secondUserName;
         } else {
-            return this.firstUser;
+            return this.firstUserName;
         }
     }
 
@@ -95,10 +100,10 @@ public class UserContact {
     public String toString() {
         return "UserContact{" +
                 "id=" + id +
-                ", firstUser='" + firstUser + '\'' +
+                ", firstUserName='" + firstUserName + '\'' +
                 ", firstUserId=" + firstUserId +
                 ", firstUserContactAcceptance=" + firstUserContactAcceptance +
-                ", secondUser='" + secondUser + '\'' +
+                ", secondUserName='" + secondUserName + '\'' +
                 ", secondUserId=" + secondUserId +
                 ", secondUserContactAcceptance=" + secondUserContactAcceptance +
                 '}';
@@ -116,19 +121,19 @@ public class UserContact {
         if (isFirstUserContactAcceptance() != that.isFirstUserContactAcceptance()) return false;
         if (getSecondUserId() != that.getSecondUserId()) return false;
         if (isSecondUserContactAcceptance() != that.isSecondUserContactAcceptance()) return false;
-        if (getFirstUser() != null ? !getFirstUser().equals(that.getFirstUser()) : that.getFirstUser() != null)
+        if (getFirstUserName() != null ? !getFirstUserName().equals(that.getFirstUserName()) : that.getFirstUserName() != null)
             return false;
-        return getSecondUser() != null ? getSecondUser().equals(that.getSecondUser()) : that.getSecondUser() == null;
+        return getSecondUserName() != null ? getSecondUserName().equals(that.getSecondUserName()) : that.getSecondUserName() == null;
 
     }
 
     @Override
     public int hashCode() {
         int result = (int) (getId() ^ (getId() >>> 32));
-        result = 31 * result + (getFirstUser() != null ? getFirstUser().hashCode() : 0);
+        result = 31 * result + (getFirstUserName() != null ? getFirstUserName().hashCode() : 0);
         result = 31 * result + (int) (getFirstUserId() ^ (getFirstUserId() >>> 32));
         result = 31 * result + (isFirstUserContactAcceptance() ? 1 : 0);
-        result = 31 * result + (getSecondUser() != null ? getSecondUser().hashCode() : 0);
+        result = 31 * result + (getSecondUserName() != null ? getSecondUserName().hashCode() : 0);
         result = 31 * result + (int) (getSecondUserId() ^ (getSecondUserId() >>> 32));
         result = 31 * result + (isSecondUserContactAcceptance() ? 1 : 0);
         return result;
@@ -136,15 +141,15 @@ public class UserContact {
 
     @Override
     public UserContact clone() {
-        return new UserContact(id, firstUser, firstUserId, firstUserContactAcceptance, secondUser, secondUserId, secondUserContactAcceptance);
+        return new UserContact(id, firstUserName, firstUserId, firstUserContactAcceptance, secondUserName, secondUserId, secondUserContactAcceptance);
     }
 
     public void copy(UserContact userContact) {
         this.id = userContact.getId();
-        this.firstUser = userContact.getFirstUser();
+        this.firstUserName = userContact.getFirstUserName();
         this.firstUserId = userContact.getFirstUserId();
         this.firstUserContactAcceptance = userContact.isFirstUserContactAcceptance();
-        this.secondUser = userContact.getSecondUser();
+        this.secondUserName = userContact.getSecondUserName();
         this.secondUserId = userContact.getSecondUserId();
         this.secondUserContactAcceptance = userContact.isSecondUserContactAcceptance();
     }
