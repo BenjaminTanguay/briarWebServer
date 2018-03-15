@@ -1,31 +1,25 @@
 package com.briar.server.handler;
 
 import com.briar.server.constants.Constants;
-import com.briar.server.exception.IncompleteObjectException;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.model.domainmodelclasses.UserContact;
 import com.briar.server.model.domainmodelclasses.UserContacts;
 import com.briar.server.patterns.identitymap.UserContactsIdentityMap;
 
-public class UserContactsHandler implements IHandler {
+public class UserContactHandler implements IHandler {
 
     private UserContact userContact;
     private UserContactsIdentityMap map;
 
-    public UserContactsHandler(UserContact userContact) throws IncompleteObjectException {
+    public UserContactHandler(UserContact userContact) {
         this(userContact, UserContactsIdentityMap.getInstance());
     }
 
     // Parametrised constructor for testing purposes
-    public UserContactsHandler(UserContact userContact, UserContactsIdentityMap map) throws IncompleteObjectException {
+    public UserContactHandler(UserContact userContact, UserContactsIdentityMap map) {
         this.userContact = userContact;
         this.map = map;
-        String firstUserName = this.userContact.getFirstUserName();
-        String secondUserName = this.userContact.getSecondUserName();
-        if (firstUserName == null || secondUserName == null) {
-            throw new IncompleteObjectException(this.userContact.toString());
-        }
     }
 
     public boolean exists() throws ObjectDeletedException {
@@ -65,6 +59,18 @@ public class UserContactsHandler implements IHandler {
     public void add() throws ObjectDeletedException {
         String firstContactName = this.userContact.getFirstUserName();
         String secondContactName = this.userContact.getSecondUserName();
+
+        // We check if a UserContacts exists
+        boolean firstUserContactsExist = this.map.doesUserContactsExists(firstContactName);
+        boolean secondUserContactsExist = this.map.doesUserContactsExists(secondContactName);
+
+        // Add a default empty UserContacts object if it doesn't already exist
+        if (!firstUserContactsExist) {
+            this.map.addUserContacts(firstContactName, new UserContacts());
+        }
+        if (!secondUserContactsExist) {
+            this.map.addUserContacts(secondContactName, new UserContacts());
+        }
 
         // We get both objects for writing
         UserContacts firstUserContacts = getFirstUserContact(firstContactName);

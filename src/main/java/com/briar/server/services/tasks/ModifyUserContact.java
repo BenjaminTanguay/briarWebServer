@@ -5,15 +5,15 @@ import com.briar.server.exception.DBException;
 import com.briar.server.exception.ObjectAlreadyExistsException;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
-import com.briar.server.handler.UserContactsHandler;
+import com.briar.server.handler.UserContactHandler;
 import com.briar.server.model.domainmodelclasses.UserContact;
 
 public class ModifyUserContact extends AbstractUserContactTask {
 
     private UserContact oldUserContact;
-    private UserContactsHandler oldUserContactHandler;
+    private UserContactHandler oldUserContactHandler;
 
-    public ModifyUserContact(UserContact userContactToModify, UserContact oldUserContact, UserContactsHandler handler, UserContactsHandler oldUserContactHandler) {
+    public ModifyUserContact(UserContact userContactToModify, UserContact oldUserContact, UserContactHandler handler, UserContactHandler oldUserContactHandler) {
         super(userContactToModify, handler);
     }
 

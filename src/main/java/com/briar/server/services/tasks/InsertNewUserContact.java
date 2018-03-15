@@ -1,12 +1,12 @@
 package com.briar.server.services.tasks;
 
 import com.briar.server.exception.*;
-import com.briar.server.handler.UserContactsHandler;
+import com.briar.server.handler.UserContactHandler;
 import com.briar.server.model.domainmodelclasses.UserContact;
 
 public class InsertNewUserContact extends AbstractUserContactTask {
 
-    public InsertNewUserContact(UserContact userContactToAdd, UserContactsHandler handler) {
+    public InsertNewUserContact(UserContact userContactToAdd, UserContactHandler handler) {
         super(userContactToAdd, handler);
     }
 

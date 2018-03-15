@@ -1,7 +1,7 @@
 package com.briar.server.services.tasks;
 
 import com.briar.server.handler.IHandler;
-import com.briar.server.handler.UserContactsHandler;
+import com.briar.server.handler.UserContactHandler;
 import com.briar.server.mapper.UserContactMapper;
 import com.briar.server.model.domainmodelclasses.UserContact;
 
@@ -15,7 +15,7 @@ public abstract class AbstractUserContactTask implements ITask {
     @Inject
     protected UserContactMapper userContactMapper;
 
-    public AbstractUserContactTask(UserContact userContact, UserContactsHandler handler) {
+    public AbstractUserContactTask(UserContact userContact, UserContactHandler handler) {
         this.userContact = userContact;
         this.handler = handler;
     }
