@@ -9,6 +9,10 @@ public class UserContact {
     private long secondUserId;
     private boolean secondUserContactAcceptance;
 
+    public UserContact() {
+        // Default constructor to allow for injection of params by libraries
+    }
+
     public UserContact(String firstUserName, long firstUserId, boolean firstUserContactAcceptance, String secondUserName, long secondUserId, boolean secondUserContactAcceptance) {
         this.firstUserName = firstUserName;
         this.firstUserId = firstUserId;

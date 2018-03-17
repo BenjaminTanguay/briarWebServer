@@ -6,12 +6,13 @@ import com.briar.server.exception.ObjectAlreadyExistsException;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.handler.UserContactHandler;
+import com.briar.server.mapper.UserContactMapper;
 import com.briar.server.model.domainmodelclasses.UserContact;
 
 public class DeleteUserContact extends AbstractUserContactTask {
 
-    public DeleteUserContact(UserContact userContactToDelete, UserContactHandler handler) {
-        super(userContactToDelete, handler);
+    public DeleteUserContact(UserContact userContactToDelete, UserContactHandler handler, UserContactMapper mapper) {
+        super(userContactToDelete, handler, mapper);
     }
 
     @Override

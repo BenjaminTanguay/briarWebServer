@@ -35,10 +35,10 @@ public interface UserContactMapper {
 
     @Select("select " +
             "c.id, " +
-            "u1.phone_generated_id as 'first_user', " +
+            "u1.phone_generated_id as 'first_user_name', " +
             "u1.id as 'first_user_id', " +
             "c.first_user_contact_acceptance, " +
-            "u2.phone_generated_id as 'second_user', " +
+            "u2.phone_generated_id as 'second_user_name', " +
             "u2.id as 'second_user_id', " +
             "c.second_user_contact_acceptance " +
             "from " +
@@ -51,10 +51,10 @@ public interface UserContactMapper {
             "" +
             "select " +
             "c.id, " +
-            "u1.phone_generated_id as 'first_user', " +
+            "u1.phone_generated_id as 'first_user_name', " +
             "u1.id as 'first_user_id', " +
             "c.first_user_contact_acceptance, " +
-            "u2.phone_generated_id as 'second_user'," +
+            "u2.phone_generated_id as 'second_user_name'," +
             "u2.id as 'second_user_id', " +
             "c.second_user_contact_acceptance " +
             "from contacts as c " +

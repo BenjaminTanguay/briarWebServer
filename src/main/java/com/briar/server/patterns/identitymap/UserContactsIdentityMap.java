@@ -20,7 +20,8 @@ public class UserContactsIdentityMap {
             synchronized (mutex) {
                 result = instance;
                 if (result == null)
-                    instance = result = new UserContactsIdentityMap();
+                    instance = new UserContactsIdentityMap();
+                    result = instance;
             }
         }
         return result;
@@ -41,6 +42,9 @@ public class UserContactsIdentityMap {
     }
 
     public UserContacts getUserContacts(@NonNull String userName, @NonNull Constants.Lock lock) throws ObjectDeletedException {
+        if (lock == Constants.Lock.reading) {
+            boolean something = true;
+        }
         return this.userContactsMap.getPayload(userName, lock);
     }
 

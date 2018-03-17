@@ -2,6 +2,7 @@ package com.briar.server.services.tasks;
 
 import com.briar.server.exception.*;
 import com.briar.server.handler.UserHandler;
+import com.briar.server.mapper.UserMapper;
 import com.briar.server.model.domainmodelclasses.User;
 
 public class ModifyUser extends AbstractUserTask {
@@ -9,8 +10,8 @@ public class ModifyUser extends AbstractUserTask {
     private User oldUser;
     private UserHandler oldUserHandler;
 
-    public ModifyUser(User newUser, User oldUser, UserHandler handler, UserHandler oldUserHandler) {
-        super(newUser, handler);
+    public ModifyUser(User newUser, User oldUser, UserHandler handler, UserHandler oldUserHandler, UserMapper mapper) {
+        super(newUser, handler, mapper);
         this.oldUser = oldUser;
         this.oldUserHandler = oldUserHandler;
     }
@@ -40,7 +41,7 @@ public class ModifyUser extends AbstractUserTask {
     }
 
     @Override
-    public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException, IncompleteObjectException {
+    public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
         this.oldUserHandler.modify();
     }
 }

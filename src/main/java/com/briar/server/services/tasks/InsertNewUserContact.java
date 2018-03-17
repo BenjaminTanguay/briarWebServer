@@ -1,13 +1,17 @@
 package com.briar.server.services.tasks;
 
-import com.briar.server.exception.*;
+import com.briar.server.exception.DBException;
+import com.briar.server.exception.ObjectAlreadyExistsException;
+import com.briar.server.exception.ObjectDeletedException;
+import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.handler.UserContactHandler;
+import com.briar.server.mapper.UserContactMapper;
 import com.briar.server.model.domainmodelclasses.UserContact;
 
 public class InsertNewUserContact extends AbstractUserContactTask {
 
-    public InsertNewUserContact(UserContact userContactToAdd, UserContactHandler handler) {
-        super(userContactToAdd, handler);
+    public InsertNewUserContact(UserContact userContactToAdd, UserContactHandler handler, UserContactMapper userContactMapper) {
+        super(userContactToAdd, handler, userContactMapper);
     }
 
     @Override
@@ -20,7 +24,7 @@ public class InsertNewUserContact extends AbstractUserContactTask {
     }
 
     @Override
-    public void commitIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException, IncompleteObjectException {
+    public void commitIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
         handler.add();
     }
 
@@ -34,7 +38,7 @@ public class InsertNewUserContact extends AbstractUserContactTask {
     }
 
     @Override
-    public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException, IncompleteObjectException {
+    public void revertIdentityMap() throws ObjectDeletedException, ObjectAlreadyExistsException, UserContactDoesntExistsException {
         handler.remove();
     }
 }

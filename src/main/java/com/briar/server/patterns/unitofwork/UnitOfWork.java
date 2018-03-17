@@ -27,7 +27,8 @@ public class UnitOfWork {
             synchronized (mutex) {
                 result = instance;
                 if (result == null)
-                    instance = result = new UnitOfWork();
+                    instance = new UnitOfWork();
+                    result = instance;
             }
         }
         return result;
@@ -110,7 +111,7 @@ public class UnitOfWork {
     }
 
     private void startReadWriteAction(String transactionId, Constants.Lock lock) {
-        boolean isFirstTransaction = this.commitLocksCollection.containsKey(transactionId);
+        boolean isFirstTransaction = !this.commitLocksCollection.containsKey(transactionId);
         if (isFirstTransaction) {
             CommitLocks commitLocks = new CommitLocks();
             commitLocks.startReadWriteAction(lock);

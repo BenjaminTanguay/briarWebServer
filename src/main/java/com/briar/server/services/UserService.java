@@ -13,24 +13,21 @@ import com.briar.server.services.tasks.DeleteUser;
 import com.briar.server.services.tasks.InsertNewUser;
 import com.briar.server.services.tasks.ModifyUser;
 
-import javax.inject.Inject;
-
-public class UserService {
+public class UserService extends AbstractService<User> {
 
     private UserIdentityMap userIdentityMap;
-    private UnitOfWork unitOfWork;
 
-    @Inject
     UserMapper mapper;
 
-    public UserService() {
-        this(UserIdentityMap.getInstance(), UnitOfWork.getInstance());
+    public UserService(UserMapper mapper) {
+        this(UserIdentityMap.getInstance(), UnitOfWork.getInstance(), mapper);
     }
 
     // Parametrised constructor for testing purposes
-    public UserService(UserIdentityMap userIdentityMap, UnitOfWork unitOfWork) {
+    public UserService(UserIdentityMap userIdentityMap, UnitOfWork unitOfWork, UserMapper mapper) {
+        super(unitOfWork);
         this.userIdentityMap = userIdentityMap;
-        this.unitOfWork = unitOfWork;
+        this.mapper = mapper;
     }
 
 
@@ -38,11 +35,16 @@ public class UserService {
         return new BriarUser(user.getPhoneGeneratedId(), user.getIp(), user.getPort());
     }
 
+    public boolean validateHackUserParams(User user) {
+        return user.getPhoneGeneratedId() != null && !user.getPhoneGeneratedId().equalsIgnoreCase("") &&
+                user.getPassword() != null && !user.getPassword().equalsIgnoreCase("");
+    }
+
     public boolean validateUserParams(User user) {
-        return user.getPhoneGeneratedId() != null &&
-                user.getIp() != null &&
+        return user.getPhoneGeneratedId() != null && !user.getPhoneGeneratedId().equalsIgnoreCase("") &&
                 user.getPort() != 0 &&
-                user.getPassword() != null;
+                user.getPassword() != null && !user.getPassword().equalsIgnoreCase("") &&
+                user.getIp() != null && !user.getIp().equalsIgnoreCase("");
     }
 
     public boolean authenticate(User user) throws ObjectDeletedException {
@@ -66,6 +68,7 @@ public class UserService {
     /**
      * For reading purposes only. If you need to modify the user object, use another method.
      * Returns a clone of the user found in the identity map. Modifying the clone is safe.
+     *
      * @param userName
      * @return User
      */
@@ -91,59 +94,52 @@ public class UserService {
                 this.userIdentityMap.addUser(userName, user);
             }
         }
-        if (user != null) {
-            user = user.clone();
-            this.userIdentityMap.stopReading(userName);
-        }
         return user;
     }
 
     /**
      * To add a user to the DB and the IdentityMap
+     *
      * @param user
      * @throws DataCompromisedException
      */
-    public void addUser(User user) throws DataCompromisedException {
+    public BriarUser addUser(User user) throws DataCompromisedException {
         UserHandler userHandler = new UserHandler(user);
-        InsertNewUser insertUserTask = new InsertNewUser(user, userHandler);
-        String transactionId = getTransactionId(user);
-        this.unitOfWork.registerCommit(transactionId, insertUserTask);
-        this.unitOfWork.pushCommit(transactionId);
+        InsertNewUser insertUserTask = new InsertNewUser(user, userHandler, mapper);
+        this.commitAndPush(user, insertUserTask);
+        return this.convertUserToBriarUser(user);
     }
 
     /**
      * To modify a user from the DB and the IdentityMap
+     *
      * @param user
      * @throws ObjectDeletedException
      * @throws DataCompromisedException
      */
-    public void modifyUser(User user) throws ObjectDeletedException, DataCompromisedException {
+    public BriarUser modifyUser(User user) throws ObjectDeletedException, DataCompromisedException {
         String userName = user.getPhoneGeneratedId();
         User oldUser = readUser(userName);
         UserHandler userHandler = new UserHandler(user);
         UserHandler oldUserHandler = new UserHandler(oldUser);
-        ModifyUser modifyUserTask = new ModifyUser(user, oldUser, userHandler, oldUserHandler);
-        String transactionId = getTransactionId(user);
-        this.unitOfWork.registerCommit(transactionId, modifyUserTask);
-        this.unitOfWork.pushCommit(transactionId);
+        ModifyUser modifyUserTask = new ModifyUser(user, oldUser, userHandler, oldUserHandler, mapper);
+        this.commitAndPush(user, modifyUserTask);
+        return this.convertUserToBriarUser(user);
     }
 
     /**
      * To remove a user from the DB and the IdentityMap
      * NOTE: The code this method relies on isn't implemented at the moment.
+     *
      * @param user
      * @throws DataCompromisedException
      */
-    public void removeUser(User user) throws DataCompromisedException {
+    public BriarUser removeUser(User user) throws DataCompromisedException {
         UserHandler userHandler = new UserHandler(user);
-        DeleteUser removeUserTask = new DeleteUser(user, userHandler);
-        String transactionId = getTransactionId(user);
-        this.unitOfWork.registerCommit(transactionId, removeUserTask);
-        this.unitOfWork.pushCommit(transactionId);
+        DeleteUser removeUserTask = new DeleteUser(user, userHandler, mapper);
+        this.commitAndPush(user, removeUserTask);
+        return this.convertUserToBriarUser(user);
     }
 
-    private String getTransactionId(User user) {
-        long currentThreadId = Thread.currentThread().getId();
-        return user.toString() + " CURRENT THREAD ID: " + currentThreadId;
-    }
+
 }

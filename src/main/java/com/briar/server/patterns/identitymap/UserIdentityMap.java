@@ -20,14 +20,15 @@ public class UserIdentityMap {
             synchronized (mutex) {
                 result = instance;
                 if (result == null)
-                    instance = result = new UserIdentityMap();
+                    instance = new UserIdentityMap();
+                    result = instance;
             }
         }
         return result;
     }
 
     private UserIdentityMap() {
-        GenericIdentityMap<String, User> userMap = new GenericIdentityMap();
+        this.userMap = new GenericIdentityMap();
     }
 
     //////////////////////////FORWARDING CALLS WITH APPROPRIATE LEVEL OF ABSTRACTION/////////////////////
@@ -41,10 +42,15 @@ public class UserIdentityMap {
     }
 
     public User getUser(@NonNull String userName, @NonNull Constants.Lock lock) throws ObjectDeletedException {
-        return this.userMap.getPayload(userName, lock);
+        User user = this.userMap.getPayload(userName, lock);
+        if (lock == Constants.Lock.reading) {
+            user = user.clone();
+            stopReading(userName);
+        }
+        return user;
     }
 
-    public void stopReading(@NonNull String userName) {
+    private void stopReading(@NonNull String userName) {
         this.userMap.stopReading(userName);
     }
 

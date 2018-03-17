@@ -4,17 +4,17 @@ import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
 import lombok.NonNull;
 
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 
 
 
 
 public class  GenericIdentityMap<Keytype, Payload> {
 
-    private IdentityHashMap<Keytype, ObjectWrapper<Payload>> identityMap;
+    private HashMap<Keytype, ObjectWrapper<Payload>> identityMap;
 
     public GenericIdentityMap() {
-        this.identityMap = new IdentityHashMap<Keytype, ObjectWrapper<Payload>>();
+        this.identityMap = new HashMap<Keytype, ObjectWrapper<Payload>>();
     }
 
     public boolean doesPayloadExists(@NonNull Keytype key) {

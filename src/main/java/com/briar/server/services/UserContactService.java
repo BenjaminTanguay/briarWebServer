@@ -1,37 +1,45 @@
 package com.briar.server.services;
 
 import com.briar.server.constants.Constants;
+import com.briar.server.exception.DataCompromisedException;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.handler.UserContactHandler;
 import com.briar.server.mapper.UserContactMapper;
+import com.briar.server.mapper.UserMapper;
 import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.domainmodelclasses.UserContact;
 import com.briar.server.model.domainmodelclasses.UserContacts;
+import com.briar.server.model.request.AddContactRequest;
 import com.briar.server.patterns.identitymap.UserContactsIdentityMap;
 import com.briar.server.patterns.unitofwork.UnitOfWork;
+import com.briar.server.services.tasks.DeleteUserContact;
+import com.briar.server.services.tasks.InsertNewUserContact;
+import com.briar.server.services.tasks.ModifyUserContact;
 
-import javax.inject.Inject;
 import java.util.List;
 
-public class UserContactService {
+public class UserContactService extends AbstractService<UserContact> {
 
     private UserContactsIdentityMap userContactMap;
-    private UnitOfWork unitOfWork;
     private UserService userService;
+    private UserContactMapper userContactMapper;
 
-    @Inject
-    UserContactMapper mapper;
-
-    public UserContactService() {
-        this(UserContactsIdentityMap.getInstance(), UnitOfWork.getInstance(), new UserService());
+    public UserContactService(UserContactMapper userContactMapper, UserMapper userMapper) {
+        this(UserContactsIdentityMap.getInstance(), UnitOfWork.getInstance(), new UserService(userMapper), userContactMapper);
     }
 
     // Parametrised constructor for testing purposes
-    public UserContactService(UserContactsIdentityMap userContactMap, UnitOfWork unitOfWork, UserService userService) {
+    public UserContactService(UserContactsIdentityMap userContactMap, UnitOfWork unitOfWork, UserService userService, UserContactMapper userContactMapper) {
+        super(unitOfWork);
         this.userContactMap = userContactMap;
-        this.unitOfWork = unitOfWork;
         this.userService = userService;
+        this.userContactMapper = userContactMapper;
+    }
+
+    public boolean validateContactRequest(AddContactRequest request) {
+        return request.getPassword() != "" && request.getPassword() != null
+                && request.getTargetPhoneGeneratedId() != "" && request.getTargetPhoneGeneratedId() != null;
     }
 
     public boolean doesUserContactExists(String userName, String contactName) {
@@ -92,7 +100,7 @@ public class UserContactService {
         // ObjectDeletedException exception
         if (!userContactsExistsInMap || isObjectDeletedExceptionTriggered) {
             // If the userContact doesn't exist in the map, we try to repopulate the map from the db first
-            List<UserContact> userContactList = this.mapper.findContacts(user.getId());
+            List<UserContact> userContactList = this.userContactMapper.findContacts(user.getId());
             handleUserContactsFromList(userContactList);
 
             // Then we check that the UserContact exists.
@@ -122,17 +130,46 @@ public class UserContactService {
         return returnValue;
     }
 
-    public void addUserContact(UserContact userContact) {
-
+    /**
+     * To add a user contact to the DB and the IdentityMap
+     * @param userContact
+     * @throws DataCompromisedException
+     */
+    public void addUserContact(UserContact userContact) throws DataCompromisedException {
+        UserContactHandler handler = new UserContactHandler(userContact);
+        InsertNewUserContact insertionTask = new InsertNewUserContact(userContact, handler, this.userContactMapper);
+        this.commitAndPush(userContact, insertionTask);
     }
 
-    public void modifyUserContact(UserContact userContact) {
+    /**
+     * To modify a user contact in the DB and the IdentityMap
+     * @param userContact
+     * @throws ObjectDeletedException
+     * @throws DataCompromisedException
+     */
+    public void modifyUserContact(UserContact userContact) throws ObjectDeletedException, DataCompromisedException {
+        String userName = userContact.getFirstUserName();
+        String contactName = userContact.getSecondUserName();
+        UserContact oldUserContact = readUserContact(userName, contactName);
+        UserContactHandler handler = new UserContactHandler(userContact);
+        UserContactHandler oldHandler = new UserContactHandler(oldUserContact);
+        ModifyUserContact modifyTask = new ModifyUserContact(userContact, oldUserContact, handler, oldHandler, this.userContactMapper);
+        this.commitAndPush(userContact, modifyTask);
+    }
 
+    /**
+     * To delete a user contact from the DB and the IdentityMap
+     * @param userContact
+     * @throws DataCompromisedException
+     */
+    public void removeUserContact(UserContact userContact) throws DataCompromisedException {
+        UserContactHandler handler = new UserContactHandler(userContact);
+        DeleteUserContact removalTask = new DeleteUserContact(userContact, handler, userContactMapper);
+        this.commitAndPush(userContact, removalTask);
     }
 
     // Takes a list of UserContact and add them one at a time to the UserContacts of the relevant parties
     private void handleUserContactsFromList(List<UserContact> userContactList) {
-        UserContacts userContacts = new UserContacts();
         for (UserContact contact : userContactList) {
             UserContactHandler handler = new UserContactHandler(contact, this.userContactMap);
             try {
