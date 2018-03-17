@@ -149,12 +149,23 @@ public class UsersResource {
         }
     }
 
+    /**
+     * Temporary access point to get the user information. Will be deleted in order to make place to a user contact
+     * system instead. Expects:
+     * {
+     *     "password": "somePassword"
+     * }
+     * @param phoneGeneratedId
+     * @param inputUser
+     * @return
+     */
     @POST
-    @Path("/hack/user/{userId}")
+    @Path("/hack/users/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(@PathParam("userId") String phoneGeneratedId, User inputUser) {
+    public Response returnUser(@PathParam("userId") String phoneGeneratedId, User inputUser) {
         Response response;
+        inputUser.setPhoneGeneratedId(phoneGeneratedId);
 
         boolean isRequestValid = this.userService.validateHackUserParams(inputUser);
         if (!isRequestValid) {
@@ -165,13 +176,6 @@ public class UsersResource {
             return response;
         }
 
-        boolean userExists = this.userService.doesUserExists(inputUser.getPhoneGeneratedId());
-        if (userExists) {
-            // You can't create a user if it already exists
-            response = Response.status(Response.Status.BAD_REQUEST).build();
-            System.out.println(response + " User already exists");
-            return response;
-        }
         try {
             User returnUser = this.userService.readUser(phoneGeneratedId);
             BriarUser returnValue = this.userService.convertUserToBriarUser(returnUser);
