@@ -36,6 +36,7 @@ public class UsersResource {
      * Method used to update the contact information of a user. Expected values
      * {
      * port: 1234,
+     * ip: "123.123.123.123",
      * password: "querty"
      * }
      *
