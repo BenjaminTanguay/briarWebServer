@@ -176,6 +176,14 @@ public class UsersResource {
             return response;
         }
 
+        boolean userExists = this.userService.doesUserExists(phoneGeneratedId);
+        if (!userExists) {
+            // You can't create a user if it already exists
+            response = Response.status(Response.Status.BAD_REQUEST).build();
+            System.out.println(response + " User already exists");
+            return response;
+        }
+
         try {
             User returnUser = this.userService.readUser(phoneGeneratedId);
             BriarUser returnValue = this.userService.convertUserToBriarUser(returnUser);

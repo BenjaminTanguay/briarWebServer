@@ -16,8 +16,8 @@ public class UserHandler implements IHandler {
     }
 
     // Parametrised constructor for testing purposes
-    public UserHandler(User userContact, UserIdentityMap map) {
-        this.user = userContact;
+    public UserHandler(User user, UserIdentityMap map) {
+        this.user = user;
         this.map = map;
     }
 

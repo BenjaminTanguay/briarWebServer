@@ -37,11 +37,11 @@ public class  GenericIdentityMap<Keytype, Payload> {
         }
         switch(lock) {
             case reading:
-                return startReading(wrapper);
+                return wrapper.startReadWriteDeleteAction(lock);
             case writing:
-                return startWriting(wrapper);
+                return wrapper.startReadWriteDeleteAction(lock);
             case deleting:
-                return startDeleting(key, wrapper);
+                return startDeleting(key, wrapper, lock);
             default:
                 return null;
         }
@@ -57,20 +57,8 @@ public class  GenericIdentityMap<Keytype, Payload> {
         wrapper.stopWriting();
     }
 
-    private Payload startReading(ObjectWrapper<Payload> wrapper) {
-        wrapper.startReading();
-        return wrapper.getPayload();
-    }
-
-    private Payload startWriting(ObjectWrapper<Payload> wrapper) {
-        wrapper.startWriting();
-        return wrapper.getPayload();
-    }
-
-    private Payload startDeleting(Keytype key, ObjectWrapper<Payload> wrapper) {
-        wrapper.startWriting();
-        wrapper.startPayloadDeleting();
-        Payload payload = wrapper.getPayload();
+    private Payload startDeleting(Keytype key, ObjectWrapper<Payload> wrapper, Constants.Lock lock) {
+        Payload payload = wrapper.startReadWriteDeleteAction(lock);
         this.identityMap.remove(key);
         return payload;
     }

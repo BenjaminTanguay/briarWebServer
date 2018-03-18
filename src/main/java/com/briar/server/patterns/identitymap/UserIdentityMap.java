@@ -27,6 +27,10 @@ public class UserIdentityMap {
         return result;
     }
 
+    public static UserIdentityMap getTestInstance() {
+        return new UserIdentityMap();
+    }
+
     private UserIdentityMap() {
         this.userMap = new GenericIdentityMap();
     }

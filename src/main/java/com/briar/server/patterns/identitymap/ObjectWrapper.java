@@ -1,5 +1,7 @@
 package com.briar.server.patterns.identitymap;
 
+import com.briar.server.constants.Constants;
+
 import static java.lang.Thread.yield;
 
 public class ObjectWrapper<Payload> {
@@ -16,7 +18,7 @@ public class ObjectWrapper<Payload> {
             this.isToBeDeleted = false;
         }
 
-        public Payload getPayload() {
+        private Payload getPayload() {
             return this.payload;
         }
 
@@ -28,23 +30,42 @@ public class ObjectWrapper<Payload> {
             return this.isToBeDeleted;
         }
 
-        public void startPayloadDeleting() {
+        private Payload startPayloadDeleting() {
             this.isToBeDeleted = true;
+            return getPayload();
         }
 
-        public synchronized void startReading() {
+        public synchronized Payload startReadWriteDeleteAction(Constants.Lock lock) {
+            if(isPayloadToBeDeleted()) {
+                return null;
+            }
+            switch(lock) {
+                case reading:
+                    return startReading();
+
+                case writing:
+                    return startWriting();
+                case deleting:
+                    return startPayloadDeleting();
+                default:
+                    return null;
+            }
+        }
+
+        private synchronized Payload startReading() {
             while(this.isThreadWriting) {
                 yield();
             }
             ++this.nbObjectReading;
+            return getPayload();
         }
 
-        public synchronized void startWriting() {
+        private synchronized Payload startWriting() {
             while(this.nbObjectReading != 0 || this.isThreadWriting) {
                 yield();
             }
-            startReading();
             this.isThreadWriting = true;
+            return getPayload();
         }
 
         public synchronized void stopReading() {

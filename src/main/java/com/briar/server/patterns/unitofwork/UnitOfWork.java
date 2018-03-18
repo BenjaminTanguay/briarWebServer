@@ -34,6 +34,10 @@ public class UnitOfWork {
         return result;
     }
 
+    public static UnitOfWork getTestInstance() {
+        return new UnitOfWork();
+    }
+
     private UnitOfWork() {
         this.toPush = new HashMap<String, ArrayList<ITask>>();
         this.toRevert = new HashMap<String, Stack<ITask>>();
@@ -59,9 +63,9 @@ public class UnitOfWork {
                 commit.commitIdentityMap();
             }
         } catch (DBException e) {
-            revertCommit(transactionId, Constants.LastCommitActionSuccessful.database);
-        } catch (Exception e) {
             revertCommit(transactionId, Constants.LastCommitActionSuccessful.identityMap);
+        } catch (Exception e) {
+            revertCommit(transactionId, Constants.LastCommitActionSuccessful.database);
         } finally {
             stopWriting(transactionId);
         }
@@ -170,7 +174,6 @@ public class UnitOfWork {
             while (this.nbUserAddingToCommitList != 0 || this.isPushingRightNow) {
                 yield();
             }
-            startReading();
             this.isPushingRightNow = true;
         }
 
