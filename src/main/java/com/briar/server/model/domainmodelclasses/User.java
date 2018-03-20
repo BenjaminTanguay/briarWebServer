@@ -17,6 +17,8 @@ public class User {
         this.password = password;
         this.ip = ip;
         this.port = port;
+        this.statusId = statusId;
+        this.avatarId = avatarId;
     }
 
     public User(String phoneGeneratedId, String password, String ip, int
@@ -25,6 +27,8 @@ public class User {
         this.password = password;
         this.ip = ip;
         this.port = port;
+        this.statusId = statusId;
+        this.avatarId = avatarId;
     }
 
     public User() {
@@ -79,7 +83,7 @@ public class User {
     }
 
     public int getAvatarId() {
-        return port;
+        return avatarId;
     }
 
     public void setAvatarId(int avatarId) {

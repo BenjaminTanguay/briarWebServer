@@ -45,7 +45,9 @@ public class UserServiceTest {
     @Test
     public void characteriseBriarUserTest() {
         BriarUser briarUser = this.userService.convertUserToBriarUser(this.user);
-        assert(briarUser.toString().equalsIgnoreCase("BriarUser{userName='hello', ip='123.123.123.123', port='1234'}"));
+        assert(briarUser.toString().equalsIgnoreCase
+                ("BriarUser{userName='hello', ip='123.123.123.123', " +
+                        "port=1234, statusId=2, avatarId=12}"));
     }
 
     @Test
