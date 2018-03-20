@@ -25,7 +25,10 @@ public class UserHandlerTest {
         String password = "qwerty";
         String ipAddress = "123.123.123.123";
         int portNumber = 1234;
-        this.user = new User(id, phoneGeneratedId, password, ipAddress, portNumber);
+        int statusId = 2;
+        int avatarId = 12;
+        this.user = new User(id, phoneGeneratedId, password, ipAddress,
+                portNumber, statusId, avatarId);
     }
 
     @Test

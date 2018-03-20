@@ -37,7 +37,9 @@ public class UsersResource {
      * {
      * port: 1234,
      * ip: "123.123.123.123",
-     * password: "querty"
+     * password: "querty",
+     * statusId: 2,
+     * avatarId: 12
      * }
      *
      * @param phoneGeneratedId
@@ -107,7 +109,9 @@ public class UsersResource {
      *     port: 1234,
      *     ip: "123.123.123.123",
      *     phoneGeneratedId: "someId",
-     *     password: "qwerty"
+     *     password: "qwerty",
+     *     statusId: 2,
+     *     avatarId, 12
      * }
      * @param inputUser
      * @return

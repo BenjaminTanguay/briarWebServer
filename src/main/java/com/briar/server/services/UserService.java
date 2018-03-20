@@ -32,7 +32,8 @@ public class UserService extends AbstractService<User> {
 
 
     public BriarUser convertUserToBriarUser(User user) {
-        return new BriarUser(user.getPhoneGeneratedId(), user.getIp(), user.getPort());
+        return new BriarUser(user.getPhoneGeneratedId(), user.getIp(), user
+                .getPort(), user.getStatusId(), user.getAvatarId());
     }
 
     public boolean validateHackUserParams(User user) {
@@ -44,7 +45,8 @@ public class UserService extends AbstractService<User> {
         return user.getPhoneGeneratedId() != null && !user.getPhoneGeneratedId().equalsIgnoreCase("") &&
                 user.getPort() != 0 &&
                 user.getPassword() != null && !user.getPassword().equalsIgnoreCase("") &&
-                user.getIp() != null && !user.getIp().equalsIgnoreCase("");
+                user.getIp() != null && !user.getIp().equalsIgnoreCase("") &&
+                user.getStatusId() != 0;
     }
 
     public boolean authenticate(User user) throws ObjectDeletedException {

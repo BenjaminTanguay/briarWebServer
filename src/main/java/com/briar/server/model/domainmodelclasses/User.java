@@ -7,8 +7,11 @@ public class User {
     private String password;
     private String ip;
     private int port;
+    private int statusId;
+    private int avatarId;
 
-    public User(long id, String phoneGeneratedId, String password, String ip, int port) {
+    public User(long id, String phoneGeneratedId, String password, String ip,
+                int port, int statusId, int avatarId) {
         this.id = id;
         this.phoneGeneratedId = phoneGeneratedId;
         this.password = password;
@@ -16,7 +19,8 @@ public class User {
         this.port = port;
     }
 
-    public User(String phoneGeneratedId, String password, String ip, int port) {
+    public User(String phoneGeneratedId, String password, String ip, int
+            port, int statusId, int avatarId) {
         this.phoneGeneratedId = phoneGeneratedId;
         this.password = password;
         this.ip = ip;
@@ -66,6 +70,22 @@ public class User {
         this.port = port;
     }
 
+    public int getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
+    }
+
+    public int getAvatarId() {
+        return port;
+    }
+
+    public void setAvatarId(int avatarId) {
+        this.avatarId = avatarId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,6 +94,8 @@ public class User {
         User user = (User) o;
 
         if (getId() != user.getId()) return false;
+        if (getAvatarId() != user.getAvatarId()) return false;
+        if (getStatusId() != user.getStatusId()) return false;
         if (!getPhoneGeneratedId().equals(user.getPhoneGeneratedId())) return false;
         if (!getPassword().equals(user.getPassword())) return false;
         if (getIp() != null ? !getIp().equals(user.getIp()) : user.getIp() != null) return false;
@@ -86,7 +108,10 @@ public class User {
         int result = (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + getPhoneGeneratedId().hashCode();
         result = 31 * result + getPassword().hashCode();
-        result = 31 * result + (getIp() != null ? getIp().hashCode() : 0);
+        result = 31 * result + getIp().hashCode();
+        result = 31 * result + getPort();
+        result = 31 * result + getStatusId();
+        result = 31 * result + getAvatarId();
         return result;
     }
 
@@ -98,12 +123,15 @@ public class User {
                 ", password='" + password + '\'' +
                 ", ip='" + ip + '\'' +
                 ", port=" + port +
+                ", statusId=" + statusId +
+                ", avatarId=" + avatarId +
                 '}';
     }
 
     @Override
     public User clone() {
-        return new User(id, phoneGeneratedId, password, ip, port);
+        return new User(id, phoneGeneratedId, password, ip, port, statusId,
+                avatarId);
     }
 
     public void copy(User user) {
@@ -112,5 +140,7 @@ public class User {
         this.password = user.getPassword();
         this.ip = user.getIp();
         this.port = user.getPort();
+        this.statusId = user.getStatusId();
+        this.avatarId = user.getAvatarId();
     }
 }
