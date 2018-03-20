@@ -84,6 +84,8 @@ public class UsersResource {
             // Setting the parameters that can change into the object returned from memory
             userInMemory.setIp(inputUser.getIp());
             userInMemory.setPort(inputUser.getPort());
+            userInMemory.setAvatarId(inputUser.getAvatarId());
+            userInMemory.setStatusId(inputUser.getStatusId());
 
             // Launching the process of modifying the identity map and DB
             BriarUser returnObject = this.userService.modifyUser(userInMemory);
@@ -185,7 +187,7 @@ public class UsersResource {
         if (!userExists) {
             // You can't create a user if it already exists
             response = Response.status(Response.Status.BAD_REQUEST).build();
-            System.out.println(response + " User already exists");
+            System.out.println(response + " User doesn't exist");
             return response;
         }
 
@@ -203,6 +205,24 @@ public class UsersResource {
             return response;
         }
     }
+
+    @GET
+    @Path("/test")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response test() {
+        String phoneGeneratedId = "HelloBob";
+        String password = "qwerty";
+        String ipAddress = "123.123.123.123";
+        int portNumber = 4444;
+        int statusId = 2;
+        int avatarId = 16;
+        User user = new User(phoneGeneratedId, password, ipAddress,
+                portNumber, statusId, avatarId);
+        this.userMapper.modifyUser(user);
+        return Response.status(Response.Status.OK).entity(user).build();
+    }
+
 
     @Path("/users/{userId}/contact")
     @Produces(MediaType.APPLICATION_JSON)

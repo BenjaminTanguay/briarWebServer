@@ -13,18 +13,20 @@ public interface UserMapper {
     User findUser(String phoneGeneratedId);
 
     @Insert("insert into users " +
-            "(phone_generated_id, password, ip, port, statusId, avatarId " +
+            "(phone_generated_id, password, ip, port, status_id, avatar_id, " +
             "is_active, created, modified) " +
-            "values (#{phoneGeneratedId}, #{password}, #{ip}, #{port}, 1, current_timestamp(), current_timestamp());")
+            "values (#{phoneGeneratedId}, #{password}, #{ip}, #{port}, #" +
+            "{statusId}, #{avatarId}," +
+            " 1, " +
+            "current_timestamp(), current_timestamp());")
     @SelectKey(statement = "SELECT LAST_INSERT_ID()", keyProperty = "id", before = false, resultType = Long.class)
     void addNewUser(User user);
 
     @Update("update users " +
-            "set phone_generated_id = #{phoneGeneratedId}, password = " +
-            "#{password}, ip = #{ip}, port = #{port}, status_id = " +
-            "#{statusId}, " +
-            "avatar_id = " +
-            "#{avatarId}, modified = current_timestamp() " +
+            "set phone_generated_id = #{phoneGeneratedId}, " +
+            "password = #{password}, ip = #{ip}, port = #{port}, " +
+            "status_id = #{statusId}, avatar_id = #{avatarId}, " +
+            "modified = current_timestamp() " +
             "where id = #{id} and is_active = 1")
     void modifyUser(User user);
 
