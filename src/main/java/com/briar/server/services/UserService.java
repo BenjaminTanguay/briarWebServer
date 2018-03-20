@@ -46,7 +46,7 @@ public class UserService extends AbstractService<User> {
                 user.getPort() != 0 &&
                 user.getPassword() != null && !user.getPassword().equalsIgnoreCase("") &&
                 user.getIp() != null && !user.getIp().equalsIgnoreCase("") &&
-                user.getStatusId() != 0;
+                user.getStatusId() != 0 && user.getAvatarId() != 0;
     }
 
     public boolean authenticate(User user) throws ObjectDeletedException {
