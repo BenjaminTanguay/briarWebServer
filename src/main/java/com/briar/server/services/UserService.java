@@ -49,6 +49,19 @@ public class UserService extends AbstractService<User> {
                 user.getStatusId() != 0 && user.getAvatarId() != 0;
     }
 
+    public boolean validateUpdateTCPParams(User user) {
+        return user.getPhoneGeneratedId() != null && !user.getPhoneGeneratedId().equalsIgnoreCase("") &&
+                user.getPort() != 0 &&
+                user.getPassword() != null && !user.getPassword().equalsIgnoreCase("") &&
+                user.getIp() != null && !user.getIp().equalsIgnoreCase("");
+    }
+
+    public boolean validateUpdateProfileParams(User user) {
+        return user.getPhoneGeneratedId() != null && !user.getPhoneGeneratedId().equalsIgnoreCase("") &&
+                user.getPassword() != null && !user.getPassword().equalsIgnoreCase("") &&
+                user.getStatusId() != 0 && user.getAvatarId() != 0;
+    }
+
     public boolean authenticate(User user) throws ObjectDeletedException {
         String userName = user.getPhoneGeneratedId();
         User readUser = readUser(userName);

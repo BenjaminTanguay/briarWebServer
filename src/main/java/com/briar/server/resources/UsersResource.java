@@ -33,29 +33,39 @@ public class UsersResource {
     }
 
     /**
-     * Method used to update the contact information of a user. Expected values
+     * Type: PUT
+     * Route: /users/{userId}
+     * Method used to update the TCP information of a user. Example of
+     * expected values:
      * {
-     * port: 1234,
-     * ip: "123.123.123.123",
-     * password: "querty",
-     * statusId: 2,
-     * avatarId: 12
+     *     port: 1234,
+     *     ip: "123.123.123.123",
+     *     password: "querty",
      * }
      *
      * @param phoneGeneratedId
      * @param inputUser
      * @return
+     * {
+     *     phoneGeneratedId: "someId",
+     *     port: 1234,
+     *     ip: "123.123.123.123",
+     *     statusId: 2,
+     *     avatarId: 12
+     * }
      */
     @PUT
     @Path("/users/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateUser(@PathParam("userId") String phoneGeneratedId, User inputUser) {
+    public Response updateTCP(@PathParam("userId") String phoneGeneratedId,
+                            User inputUser) {
         Response response;
 
         inputUser.setPhoneGeneratedId(phoneGeneratedId);
         try {
-            boolean isRequestValid = this.userService.validateUserParams(inputUser);
+            boolean isRequestValid = this.userService.validateUpdateTCPParams
+                    (inputUser);
             if (!isRequestValid) {
                 // You can't update a user if the request isn't valid
                 // (some mandatory param aren't filled).
@@ -84,6 +94,86 @@ public class UsersResource {
             // Setting the parameters that can change into the object returned from memory
             userInMemory.setIp(inputUser.getIp());
             userInMemory.setPort(inputUser.getPort());
+
+            // Launching the process of modifying the identity map and DB
+            BriarUser returnObject = this.userService.modifyUser(userInMemory);
+
+            // If no error is returned, we send back OK
+            response = Response.status(Response.Status.OK).entity(returnObject).build();
+            System.out.println(response);
+            return response;
+
+        } catch (Exception e) {
+            // Any exception we catch is an internal server error.
+            //TODO Eventually we'll need a log service.
+            System.out.println(e);
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            System.out.println(response);
+            return response;
+        }
+    }
+
+    /**
+     * Type: PUT
+     * Route: /users/{userId}/profile
+     * Method used to update the profile information of a user. Example of
+     * expected values:
+     * {
+     *     statusId: 2,
+     *     avatarId: 12,
+     *     password: "querty"
+     * }
+     *
+     * @param phoneGeneratedId
+     * @param inputUser
+     * @return
+     * {
+     *     phoneGeneratedId: "someId",
+     *     port: 1234,
+     *     ip: "123.123.123.123",
+     *     statusId: 2,
+     *     avatarId: 12
+     * }
+     */
+    @PUT
+    @Path("/users/{userId}/profile")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateProfile(@PathParam("userId") String phoneGeneratedId,
+                              User inputUser) {
+        Response response;
+
+        inputUser.setPhoneGeneratedId(phoneGeneratedId);
+        try {
+            boolean isRequestValid = this.userService
+                    .validateUpdateProfileParams
+                    (inputUser);
+            if (!isRequestValid) {
+                // You can't update a user if the request isn't valid
+                // (some mandatory param aren't filled).
+                response = Response.status(Response.Status.BAD_REQUEST).build();
+                System.out.println(response);
+                return response;
+            }
+
+            boolean userExists = this.userService.doesUserExists(phoneGeneratedId);
+            if (!userExists) {
+                // You can't update a user if it isn't created
+                response = Response.status(Response.Status.NOT_FOUND).build();
+                System.out.println(response);
+                return response;
+            }
+
+            boolean isPasswordValid = this.userService.authenticate(inputUser);
+            if (!isPasswordValid) {
+                // Can't update the info to a user if you don't have the right password
+                response = Response.status(Response.Status.UNAUTHORIZED).build();
+                System.out.println(response);
+                return response;
+            }
+
+            User userInMemory = this.userService.readUser(phoneGeneratedId);
+            // Setting the parameters that can change into the object returned from memory
             userInMemory.setAvatarId(inputUser.getAvatarId());
             userInMemory.setStatusId(inputUser.getStatusId());
 
@@ -106,7 +196,10 @@ public class UsersResource {
     }
 
     /**
-     * Method used to create the contact information of a user. Input required:
+     * Type: POST
+     * Route: /user
+     * Method used to create the contact information of a user. Example of
+     * expected values:
      * {
      *     port: 1234,
      *     ip: "123.123.123.123",
@@ -117,6 +210,13 @@ public class UsersResource {
      * }
      * @param inputUser
      * @return
+     * {
+     *     phoneGeneratedId: "someId",
+     *     port: 1234,
+     *     ip: "123.123.123.123",
+     *     statusId: 2,
+     *     avatarId: 12
+     * }
      */
     @POST
     @Path("/user")
@@ -157,6 +257,8 @@ public class UsersResource {
     }
 
     /**
+     * Type: POST
+     * Route: /hack/users/{userId}
      * Temporary access point to get the user information. Will be deleted in order to make place to a user contact
      * system instead. Expects:
      * {
@@ -165,6 +267,13 @@ public class UsersResource {
      * @param phoneGeneratedId
      * @param inputUser
      * @return
+     * {
+     *     phoneGeneratedId: "someId",
+     *     port: 1234,
+     *     ip: "123.123.123.123",
+     *     statusId: 2,
+     *     avatarId: 12
+     * }
      */
     @POST
     @Path("/hack/users/{userId}")
