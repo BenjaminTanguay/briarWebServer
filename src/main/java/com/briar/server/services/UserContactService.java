@@ -169,6 +169,8 @@ public class UserContactService extends AbstractService<UserContact> {
     }
 
     // Takes a list of UserContact and add them one at a time to the UserContacts of the relevant parties
+
+    // devrait fonctionner mais List<UserContact> != UserContacts
     private void handleUserContactsFromList(List<UserContact> userContactList) {
         for (UserContact contact : userContactList) {
             UserContactHandler handler = new UserContactHandler(contact, this.userContactMap);
