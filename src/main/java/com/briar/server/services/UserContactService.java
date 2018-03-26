@@ -171,14 +171,27 @@ public class UserContactService extends AbstractService<UserContact> {
     // Takes a list of UserContact and add them one at a time to the UserContacts of the relevant parties
 
     // devrait fonctionner mais List<UserContact> != UserContacts
-    private void handleUserContactsFromList(List<UserContact> userContactList) {
-        for (UserContact contact : userContactList) {
-            UserContactHandler handler = new UserContactHandler(contact, this.userContactMap);
-            try {
-                handler.add();
-            } catch (ObjectDeletedException e) {
-                // Silently fail (we want the loop to keep going)
-            }
-        }
+//    private void handleUserContactsFromList(List<UserContact> userContactList) {
+//        for (UserContact contact : userContactList) {
+//            UserContactHandler handler = new UserContactHandler(contact, this.userContactMap);
+//            try {
+//                handler.add();
+//            } catch (ObjectDeletedException e) {
+//                // Silently fail (we want the loop to keep going)
+//            }
+//        }
+//    }
+
+    private void addUserstoIndentityMap(String userName){
+        //Retrieve user
+        User user = this.userService.readUser(userName);
+
+        //Retrieve Identity Map of User
+
+        //Retrieve userList from database
+
+        //Compare userList with identity map to see which is missing
+        //If all of userList is in IndentityMap, no need to update
+
     }
 }
