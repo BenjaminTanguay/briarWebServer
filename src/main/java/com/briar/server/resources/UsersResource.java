@@ -347,5 +347,4 @@ public class UsersResource {
         return new ContactsResource(userMapper, userContactMapper);
     }
 
-
 }

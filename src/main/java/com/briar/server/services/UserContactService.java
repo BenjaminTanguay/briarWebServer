@@ -230,8 +230,8 @@ public class UserContactService extends AbstractService<UserContact> {
             }
             else{
                 UserContacts newUserContacts = new UserContacts();
-
                 newUserContacts.addContact(userName, contact);
+                this.userContactMap.addUserContacts(otherUserName, newUserContacts);
             }
         }
         this.userContactMap.stopWriting(userName);

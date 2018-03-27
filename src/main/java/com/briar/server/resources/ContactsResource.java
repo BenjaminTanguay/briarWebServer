@@ -1,8 +1,11 @@
 package com.briar.server.resources;
 
+import com.briar.server.exception.ObjectDeletedException;
+import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.mapper.UserContactMapper;
 import com.briar.server.mapper.UserMapper;
 import com.briar.server.model.domainmodelclasses.User;
+import com.briar.server.model.domainmodelclasses.UserContact;
 import com.briar.server.services.UserContactService;
 import com.briar.server.services.UserService;
 import io.swagger.annotations.Api;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Component
 @Path("/")
@@ -46,10 +50,14 @@ public class ContactsResource {
         userToAuthentify.setPassword(userParam.getPassword());
         userToAuthentify.setPhoneGeneratedId(userId);
         return response;
-
-
-
-
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateContactList(@PathParam("userId") String userId) throws ObjectDeletedException, UserContactDoesntExistsException {
+        Response response = null;
+        List<UserContact> userList = this.userContactService.updateUserIdentityMapWithDB(userId);
+        return response.status(Response.Status.OK).entity(userList).build();
+    }
 }

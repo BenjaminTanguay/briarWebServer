@@ -27,11 +27,13 @@ public class UserContactServiceTest {
     private UserContactsIdentityMap userContactsIdentityMap;
     private UserContactMapper userContactMapper;
     private UserService userService;
+    private UserContactService userContactService;
     private String userName;
     private UserContact user1;
     private UserContact user2;
     private UserContact otherUser1;
     private UserContact otherUser2;
+    private List<UserContact> contactList;
 
     @Before
     public void setup() {
@@ -49,13 +51,14 @@ public class UserContactServiceTest {
         this.user = new User(id, phoneGeneratedId, password, ipAddress,
                 portNumber, statusId, avatarId);
         this.userService = mock(UserService.class);
+        this.userContactService = new UserContactService(this.userContactsIdentityMap, this.unitOfWork, this.userService, this.userContactMapper);
 
         user1 = new UserContact(1, phoneGeneratedId, id, true, "second user 1", 111, true);
         user2 = new UserContact(2, phoneGeneratedId, id, false, "second user 2", 222, true);
         otherUser1 = new UserContact(3, "second user 3", 333, true, phoneGeneratedId, id, true);
         otherUser2 = new UserContact(4, "second user 4", 444, false, phoneGeneratedId, id, true);
 
-        List<UserContact> contactList = new ArrayList<>();
+        contactList = new ArrayList<>();
         contactList.add(user1);
         contactList.add(user2);
         contactList.add(otherUser1);
@@ -71,7 +74,9 @@ public class UserContactServiceTest {
     }
 
     @Test
-    public void test() throws ObjectDeletedException, UserContactDoesntExistsException {
+    public void testEmptyIdentityMapGettingPopulatedWithObjectsFromDatabase() throws ObjectDeletedException, UserContactDoesntExistsException {
+        List<UserContact> userGeneratedList = this.userContactService.updateUserIdentityMapWithDB(user.getPhoneGeneratedId());
+
         UserContacts userContacts1 = this.userContactsIdentityMap.getUserContacts(user.getPhoneGeneratedId(), Constants.Lock.reading);
         UserContacts userContacts2 = this.userContactsIdentityMap.getUserContacts("second user 1", Constants.Lock.reading);
         UserContacts userContacts3 = this.userContactsIdentityMap.getUserContacts("second user 2", Constants.Lock.reading);
@@ -87,5 +92,7 @@ public class UserContactServiceTest {
         Assert.assertEquals(user2, userContacts3.getUserContact(user.getPhoneGeneratedId()));
         Assert.assertEquals(otherUser1, userContacts4.getUserContact(user.getPhoneGeneratedId()));
         Assert.assertEquals(otherUser2, userContacts5.getUserContact(user.getPhoneGeneratedId()));
+
+        Assert.assertEquals(userGeneratedList, contactList);
     }
 }
