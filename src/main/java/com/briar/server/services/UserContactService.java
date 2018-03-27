@@ -183,6 +183,8 @@ public class UserContactService extends AbstractService<UserContact> {
         }
     }
 
+    //This method takes a username, compares the Identity Map of the username with the contacts list from the database.
+    //Updates the Identity Map if there are missing contacts when comparing. Handles when there is no Identity Map for a user.
     public List<UserContact> updateUserIdentityMapWithDB(String userName) throws ObjectDeletedException, UserContactDoesntExistsException{
         //Retrieve user
         User user = this.userService.readUser(userName);
@@ -190,13 +192,10 @@ public class UserContactService extends AbstractService<UserContact> {
         //Retrieve userList from database
         List<UserContact> userList = this.userContactMapper.findContacts(user.getId());
 
-        //Retrieve Identity Map of User
         // Does the list of contacts exists in the map
         boolean userContactsExistsInMap = this.userContactMap.doesUserContactsExists(userName);
 
-        //Compare userList with identity map to see which is missing
-        //If all of userList is in Identity Map, no need to update
-
+        //Checks if the user has an Identity Map. Retrieves it if does, creates one if it doesn't.
         UserContacts userContacts;
         if (userContactsExistsInMap){
             userContacts = this.userContactMap.getUserContacts(userName, Constants.Lock.writing);
@@ -206,13 +205,11 @@ public class UserContactService extends AbstractService<UserContact> {
             userContacts = new UserContacts();
             this.userContactMap.addUserContacts(userName, userContacts);
         }
-        //Retrieved Identity Map for current user
 
+        //Compares each contact from the database with each contact in the Identity Map
         for(UserContact contact : userList){
-            //Checks if user dosen't exists withing identity map of current user
-
             /////////////////////////////////////////////////////////////////////////////////////////////
-            //Update cuurent user's identoty map with up-to-date contacts from database
+            //Update current user's identity map with up-to-date contacts from database
             /////////////////////////////////////////////////////////////////////////////////////////////
             String otherUserName = contact.getOtherUser(userName);
 
@@ -222,12 +219,14 @@ public class UserContactService extends AbstractService<UserContact> {
             /////////////////////////////////////////////////////////////////////////////////////////////
             boolean otherUserContactsExistsInMap = this.userContactMap.doesUserContactsExists(otherUserName);
 
+            //When other user has existing Identity Map, add current user to facilitate connection
             if(otherUserContactsExistsInMap){
                 UserContacts otherContacts = this.userContactMap.getUserContacts(otherUserName, Constants.Lock.writing);
 
                 addDBContactToIdentityMap(userName, userContacts, contact);
                 this.userContactMap.stopWriting(otherUserName);
             }
+            //When the other user doesn't have an Identity Map, create one and add the current user
             else{
                 UserContacts newUserContacts = new UserContacts();
                 newUserContacts.addContact(userName, contact);
@@ -239,6 +238,7 @@ public class UserContactService extends AbstractService<UserContact> {
         return userList;
     }
 
+    //This method adds/updates the Identity Map of the current user with contacts from the database
     private void addDBContactToIdentityMap(String userName, UserContacts userContacts, UserContact contact) throws UserContactDoesntExistsException{
         boolean doesUserNameExistInUserContacts = userContacts.contactExists(userName);
         if(!doesUserNameExistInUserContacts){
