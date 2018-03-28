@@ -11,12 +11,14 @@ import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.domainmodelclasses.UserContact;
 import com.briar.server.model.domainmodelclasses.UserContacts;
 import com.briar.server.model.request.AddContactRequest;
+import com.briar.server.model.returnedtobriarclasses.BriarUser;
 import com.briar.server.patterns.identitymap.UserContactsIdentityMap;
 import com.briar.server.patterns.unitofwork.UnitOfWork;
 import com.briar.server.services.tasks.DeleteUserContact;
 import com.briar.server.services.tasks.InsertNewUserContact;
 import com.briar.server.services.tasks.ModifyUserContact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserContactService extends AbstractService<UserContact> {
@@ -183,9 +185,29 @@ public class UserContactService extends AbstractService<UserContact> {
         }
     }
 
+    public List<BriarUser> getUpdatedContactList(String userName) throws ObjectDeletedException, UserContactDoesntExistsException {
+        updateUserIdentityMapWithDB(userName);
+
+        UserContacts userContacts = this.userContactMap.getUserContacts(userName, Constants.Lock.reading);
+
+        ArrayList<String> userContactList = userContacts.getAllContacts();
+
+        List<BriarUser> outgoingList = new ArrayList<>();
+
+        for(String contactName : userContactList){
+            User user = this.userService.readUser(contactName);
+
+            outgoingList.add(this.userService.convertUserToBriarUser(user));
+        }
+
+        this.userContactMap.stopReading(userName);
+
+        return outgoingList;
+    }
+
     //This method takes a username, compares the Identity Map of the username with the contacts list from the database.
     //Updates the Identity Map if there are missing contacts when comparing. Handles when there is no Identity Map for a user.
-    public List<UserContact> updateUserIdentityMapWithDB(String userName) throws ObjectDeletedException, UserContactDoesntExistsException{
+    public void updateUserIdentityMapWithDB(String userName) throws ObjectDeletedException, UserContactDoesntExistsException{
         //Retrieve user
         User user = this.userService.readUser(userName);
 
@@ -204,10 +226,11 @@ public class UserContactService extends AbstractService<UserContact> {
             //Create identity map for contacts with username
             userContacts = new UserContacts();
             this.userContactMap.addUserContacts(userName, userContacts);
+            this.userContactMap.getUserContacts(userName, Constants.Lock.writing);
         }
 
         //Compares each contact from the database with each contact in the Identity Map
-        for(UserContact contact : userList){
+        for(UserContact contact : userList) {
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Update current user's identity map with up-to-date contacts from database
             /////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +240,11 @@ public class UserContactService extends AbstractService<UserContact> {
             /////////////////////////////////////////////////////////////////////////////////////////////
             //Updating current user contacts identity map with current user info to facilitate bilateral connection
             /////////////////////////////////////////////////////////////////////////////////////////////
+        }
+        this.userContactMap.stopWriting(userName);
+
+        for(UserContact contact: userList){
+            String otherUserName = contact.getOtherUser(userName);
             boolean otherUserContactsExistsInMap = this.userContactMap.doesUserContactsExists(otherUserName);
 
             //When other user has existing Identity Map, add current user to facilitate connection
@@ -224,7 +252,6 @@ public class UserContactService extends AbstractService<UserContact> {
                 UserContacts otherContacts = this.userContactMap.getUserContacts(otherUserName, Constants.Lock.writing);
 
                 addDBContactToIdentityMap(userName, userContacts, contact);
-                this.userContactMap.stopWriting(otherUserName);
             }
             //When the other user doesn't have an Identity Map, create one and add the current user
             else{
@@ -232,10 +259,8 @@ public class UserContactService extends AbstractService<UserContact> {
                 newUserContacts.addContact(userName, contact);
                 this.userContactMap.addUserContacts(otherUserName, newUserContacts);
             }
+            this.userContactMap.stopWriting(otherUserName);
         }
-        this.userContactMap.stopWriting(userName);
-
-        return userList;
     }
 
     //This method adds/updates the Identity Map of the current user with contacts from the database
