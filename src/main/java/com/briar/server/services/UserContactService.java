@@ -185,21 +185,23 @@ public class UserContactService extends AbstractService<UserContact> {
         }
     }
 
+    //This method takes the identity map of the current user and converts each user to a BriarUser
     public List<BriarUser> getUpdatedContactList(String userName) throws ObjectDeletedException, UserContactDoesntExistsException {
+        //Call method to update identity map from database
         updateUserIdentityMapWithDB(userName);
 
+        //Retrieve Identity Map of current user
         UserContacts userContacts = this.userContactMap.getUserContacts(userName, Constants.Lock.reading);
 
+        //List containers to hold the usernames of all contacts and Briar Users
         ArrayList<String> userContactList = userContacts.getAllContacts();
-
         List<BriarUser> outgoingList = new ArrayList<>();
 
+        //Loop through each contact name, get their user information and convert them to briar users
         for(String contactName : userContactList){
             User user = this.userService.readUser(contactName);
-
             outgoingList.add(this.userService.convertUserToBriarUser(user));
         }
-
         this.userContactMap.stopReading(userName);
 
         return outgoingList;
