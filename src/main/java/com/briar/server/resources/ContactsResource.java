@@ -6,6 +6,7 @@ import com.briar.server.mapper.UserContactMapper;
 import com.briar.server.mapper.UserMapper;
 import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.domainmodelclasses.UserContact;
+import com.briar.server.model.returnedtobriarclasses.BriarUser;
 import com.briar.server.services.UserContactService;
 import com.briar.server.services.UserService;
 import io.swagger.annotations.Api;
@@ -57,7 +58,7 @@ public class ContactsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateContactList(@PathParam("userId") String userId) throws ObjectDeletedException, UserContactDoesntExistsException {
         Response response = null;
-        this.userContactService.updateUserIdentityMapWithDB(userId);
-        return response.status(Response.Status.OK).entity(userList).build();
+        List<BriarUser> contactList = this.userContactService.getUpdatedContactList(userId);
+        return response.status(Response.Status.OK).entity(contactList).build();
     }
 }
