@@ -52,12 +52,12 @@ public class ContactsResource {
         return response;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateContactList(@PathParam("userId") String userId) throws ObjectDeletedException, UserContactDoesntExistsException {
-        Response response = null;
-        List<UserContact> userList = this.userContactService.updateUserIdentityMapWithDB(userId);
-        return response.status(Response.Status.OK).entity(userList).build();
-    }
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response updateContactList(@PathParam("userId") String userId) throws ObjectDeletedException, UserContactDoesntExistsException {
+//        Response response = null;
+//        this.userContactService.updateUserIdentityMapWithDB(userId);
+//        return response.status(Response.Status.OK).entity(userList).build();
+//    }
 }

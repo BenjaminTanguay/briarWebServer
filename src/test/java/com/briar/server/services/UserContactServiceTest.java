@@ -75,7 +75,7 @@ public class UserContactServiceTest {
 
     @Test
     public void testEmptyIdentityMapGettingPopulatedWithObjectsFromDatabase() throws ObjectDeletedException, UserContactDoesntExistsException {
-        List<UserContact> userGeneratedList = this.userContactService.updateUserIdentityMapWithDB(user.getPhoneGeneratedId());
+        this.userContactService.updateUserIdentityMapWithDB(user.getPhoneGeneratedId());
 
         UserContacts userContacts1 = this.userContactsIdentityMap.getUserContacts(user.getPhoneGeneratedId(), Constants.Lock.reading);
         UserContacts userContacts2 = this.userContactsIdentityMap.getUserContacts("second user 1", Constants.Lock.reading);
@@ -92,7 +92,85 @@ public class UserContactServiceTest {
         Assert.assertEquals(user2, userContacts3.getUserContact(user.getPhoneGeneratedId()));
         Assert.assertEquals(otherUser1, userContacts4.getUserContact(user.getPhoneGeneratedId()));
         Assert.assertEquals(otherUser2, userContacts5.getUserContact(user.getPhoneGeneratedId()));
+    }
 
-        Assert.assertEquals(userGeneratedList, contactList);
+    @Test
+    public void testPartialIdentityMapGettingPopulatedWithObjectsFromDatabase() throws ObjectDeletedException, UserContactDoesntExistsException {
+        //Created clone users and change the information of the first 2 users
+        UserContact user1 = this.user1.clone();
+        user1.setFirstUserContactAcceptance(false);
+        UserContact user2 = this.user2.clone();
+        user2.setFirstUserContactAcceptance(true);
+
+        UserContacts userContacts = new UserContacts();
+
+        //Added local users contacts to identityMap of current user
+        userContacts.addContact(user1.getOtherUser(user.getPhoneGeneratedId()), user1);
+        userContacts.addContact(user2.getOtherUser(user.getPhoneGeneratedId()), user2);
+
+        this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), userContacts);
+
+        this.userContactService.updateUserIdentityMapWithDB(user.getPhoneGeneratedId());
+
+        UserContacts userContacts1 = this.userContactsIdentityMap.getUserContacts(user.getPhoneGeneratedId(), Constants.Lock.reading);
+        UserContacts userContacts2 = this.userContactsIdentityMap.getUserContacts("second user 1", Constants.Lock.reading);
+        UserContacts userContacts3 = this.userContactsIdentityMap.getUserContacts("second user 2", Constants.Lock.reading);
+        UserContacts userContacts4 = this.userContactsIdentityMap.getUserContacts("second user 3", Constants.Lock.reading);
+        UserContacts userContacts5 = this.userContactsIdentityMap.getUserContacts("second user 4", Constants.Lock.reading);
+
+        Assert.assertEquals(this.user1, userContacts1.getUserContact("second user 1"));
+        Assert.assertEquals(this.user2, userContacts1.getUserContact("second user 2"));
+        Assert.assertEquals(otherUser1, userContacts1.getUserContact("second user 3"));
+        Assert.assertEquals(otherUser2, userContacts1.getUserContact("second user 4"));
+
+        Assert.assertEquals(this.user1, userContacts2.getUserContact(user.getPhoneGeneratedId()));
+        Assert.assertEquals(this.user2, userContacts3.getUserContact(user.getPhoneGeneratedId()));
+        Assert.assertEquals(otherUser1, userContacts4.getUserContact(user.getPhoneGeneratedId()));
+        Assert.assertEquals(otherUser2, userContacts5.getUserContact(user.getPhoneGeneratedId()));
+
+        Assert.assertTrue(this.user1.equals(user1));
+        Assert.assertTrue(this.user2.equals(user2));
+    }
+
+    @Test
+    public void testFullIdentityMapGettingPopulatedWithObjectsFromDatabase() throws ObjectDeletedException, UserContactDoesntExistsException {
+        //Created clone users and change the information of the first 2 users
+        UserContact user1 = this.user1.clone();
+        user1.setFirstUserContactAcceptance(false);
+        UserContact user2 = this.user2.clone();
+        user2.setFirstUserContactAcceptance(true);
+        UserContact user3 = this.otherUser1.clone();
+        UserContact user4 = this.otherUser2.clone();
+
+        UserContacts userContacts = new UserContacts();
+
+        //Added all users contacts to identityMap of current user
+        userContacts.addContact(user1.getOtherUser(user.getPhoneGeneratedId()), user1);
+        userContacts.addContact(user2.getOtherUser(user.getPhoneGeneratedId()), user2);
+        userContacts.addContact(user3.getOtherUser(user.getPhoneGeneratedId()), user3);
+        userContacts.addContact(user4.getOtherUser(user.getPhoneGeneratedId()), user4);
+
+        this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), userContacts);
+
+        this.userContactService.updateUserIdentityMapWithDB(user.getPhoneGeneratedId());
+
+        UserContacts userContacts1 = this.userContactsIdentityMap.getUserContacts(user.getPhoneGeneratedId(), Constants.Lock.reading);
+        UserContacts userContacts2 = this.userContactsIdentityMap.getUserContacts("second user 1", Constants.Lock.reading);
+        UserContacts userContacts3 = this.userContactsIdentityMap.getUserContacts("second user 2", Constants.Lock.reading);
+        UserContacts userContacts4 = this.userContactsIdentityMap.getUserContacts("second user 3", Constants.Lock.reading);
+        UserContacts userContacts5 = this.userContactsIdentityMap.getUserContacts("second user 4", Constants.Lock.reading);
+
+        Assert.assertEquals(this.user1, userContacts1.getUserContact("second user 1"));
+        Assert.assertEquals(this.user2, userContacts1.getUserContact("second user 2"));
+        Assert.assertEquals(otherUser1, userContacts1.getUserContact("second user 3"));
+        Assert.assertEquals(otherUser2, userContacts1.getUserContact("second user 4"));
+
+        Assert.assertEquals(this.user1, userContacts2.getUserContact(user.getPhoneGeneratedId()));
+        Assert.assertEquals(this.user2, userContacts3.getUserContact(user.getPhoneGeneratedId()));
+        Assert.assertEquals(otherUser1, userContacts4.getUserContact(user.getPhoneGeneratedId()));
+        Assert.assertEquals(otherUser2, userContacts5.getUserContact(user.getPhoneGeneratedId()));
+
+        Assert.assertTrue(this.user1.equals(user1));
+        Assert.assertTrue(this.user2.equals(user2));
     }
 }
