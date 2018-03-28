@@ -4,12 +4,11 @@ import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.mapper.UserContactMapper;
-import com.briar.server.mapper.UserMapper;
 import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.domainmodelclasses.UserContact;
 import com.briar.server.model.domainmodelclasses.UserContacts;
+import com.briar.server.model.returnedtobriarclasses.BriarUser;
 import com.briar.server.patterns.identitymap.UserContactsIdentityMap;
-import com.briar.server.patterns.identitymap.UserIdentityMap;
 import com.briar.server.patterns.unitofwork.UnitOfWork;
 import org.junit.Assert;
 import org.junit.Before;
@@ -172,5 +171,46 @@ public class UserContactServiceTest {
 
         Assert.assertTrue(this.user1.equals(user1));
         Assert.assertTrue(this.user2.equals(user2));
+    }
+
+    @Test
+    public void test() throws ObjectDeletedException, UserContactDoesntExistsException {
+        BriarUser bUser1 = new BriarUser("user 1", "111.222.333.444", 123, 1,1);
+        BriarUser bUser2 = new BriarUser("user 2", "111.333.222.444", 121, 1,0);
+
+        List<BriarUser> briarUserList = new ArrayList<>();
+        briarUserList.add(bUser1);
+        briarUserList.add(bUser2);
+
+        long id1 = 321;
+        String phoneGeneratedId1 = "hello2";
+        String password1 = "qwerty";
+        String ipAddress1 = "123.321.123.321";
+        int portNumber1 = 1234;
+        int statusId1 = 2;
+        int avatarId1 = 10;
+        User testUser1 = new User(id1, phoneGeneratedId1, password1, ipAddress1,
+                portNumber1, statusId1, avatarId1);
+
+        long id2 = 132;
+        String phoneGeneratedId2 = "hello3";
+        String password2 = "qwerty";
+        String ipAddress2 = "321.123.321.123";
+        int portNumber2 = 1234;
+        int statusId2 = 1;
+        int avatarId2 = 9;
+        User testUser2 = new User(id2, phoneGeneratedId2, password2, ipAddress2,
+                portNumber2, statusId2, avatarId2);
+
+        when(this.userService.readUser(testUser1.getPhoneGeneratedId())).thenReturn(testUser1);
+        when(this.userService.readUser(testUser2.getPhoneGeneratedId())).thenReturn(testUser2);
+
+        when(this.userService.convertUserToBriarUser(testUser1)).thenReturn(bUser1);
+        when(this.userService.convertUserToBriarUser(testUser2)).thenReturn(bUser2);
+
+        this.userContactService.getUpdatedContactList(user.getPhoneGeneratedId());
+
+        Assert.assertEquals(bUser1, briarUserList.get(0));
+        Assert.assertEquals(bUser2, briarUserList.get(1));
     }
 }
