@@ -11,6 +11,7 @@ import com.briar.server.model.domainmodelclasses.UserContacts;
 import com.briar.server.model.returnedtobriarclasses.BriarUser;
 import com.briar.server.patterns.identitymap.UserContactsIdentityMap;
 import com.briar.server.patterns.unitofwork.UnitOfWork;
+import com.sun.corba.se.spi.servicecontext.UnknownServiceContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -175,7 +176,7 @@ public class UserContactServiceTest {
     }
 
     @Test
-    public void test() throws ObjectDeletedException, UserContactDoesntExistsException {
+    public void testReturnBriarUser() throws ObjectDeletedException, UserContactDoesntExistsException {
         BriarUser bUser1 = new BriarUser("user 1", "111.222.333.444", 123, 1,1);
         BriarUser bUser2 = new BriarUser("user 2", "111.333.222.444", 121, 1,0);
 
@@ -213,5 +214,25 @@ public class UserContactServiceTest {
 
         Assert.assertEquals(bUser1, briarUserList.get(0));
         Assert.assertEquals(bUser2, briarUserList.get(1));
+    }
+
+    @Test
+    public void testContactNotInIdentityMapButInDB() throws ObjectDeletedException {
+        Assert.assertEquals(user1, this.userContactService.readUserContact(user.getPhoneGeneratedId(), "second user 1"));
+    }
+
+    @Test
+    public void testContactInIdentityMapAndInDB() throws ObjectDeletedException {
+        UserContacts testUserContact = new UserContacts();
+        testUserContact.addContact("second user 1", user1);
+
+        this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), testUserContact);
+
+        Assert.assertEquals(user1, this.userContactService.readUserContact(user.getPhoneGeneratedId(), "second user 1"));
+    }
+
+    @Test
+    public void testContactDosentExist() throws ObjectDeletedException {
+        Assert.assertEquals(null, this.userContactService.readUserContact(user.getPhoneGeneratedId(), "Doesn't Exist"));
     }
 }

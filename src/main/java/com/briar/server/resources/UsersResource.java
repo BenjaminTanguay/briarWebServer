@@ -320,24 +320,6 @@ public class UsersResource {
         }
     }
 
-    @GET
-    @Path("/test")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response test() {
-        String phoneGeneratedId = "HelloBob";
-        String password = "qwerty";
-        String ipAddress = "123.123.123.123";
-        int portNumber = 4444;
-        int statusId = 2;
-        int avatarId = 16;
-        User user = new User(phoneGeneratedId, password, ipAddress,
-                portNumber, statusId, avatarId);
-        this.userMapper.modifyUser(user);
-        return Response.status(Response.Status.OK).entity(user).build();
-    }
-
-
     @Path("/users/{userId}/contact")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
