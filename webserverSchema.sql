@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS `briar_server`.`users` ;
 CREATE TABLE IF NOT EXISTS `briar_server`.`users` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `phone_generated_id` VARCHAR(64) NOT NULL,
-  `password` VARCHAR(64) NOT NULL,
+  `password` BLOB NOT NULL,
   `ip` VARCHAR(20) NULL DEFAULT NULL,
   `port` INT(5) UNSIGNED NOT NULL,
   `status_id` INT(1) UNSIGNED NOT NULL,

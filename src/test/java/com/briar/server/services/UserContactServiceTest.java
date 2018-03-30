@@ -1,5 +1,6 @@
 package com.briar.server.services;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;

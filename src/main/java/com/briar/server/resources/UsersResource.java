@@ -62,6 +62,8 @@ public class UsersResource {
                             User inputUser) {
         Response response;
 
+        inputUser.setPassword(Integer.toString(inputUser.getPassword().hashCode()));
+
         inputUser.setPhoneGeneratedId(phoneGeneratedId);
         try {
             boolean isRequestValid = this.userService.validateUpdateTCPParams
@@ -143,6 +145,7 @@ public class UsersResource {
                               User inputUser) {
         Response response;
 
+        inputUser.setPassword(Integer.toString(inputUser.getPassword().hashCode()));
         inputUser.setPhoneGeneratedId(phoneGeneratedId);
         try {
             boolean isRequestValid = this.userService
@@ -224,6 +227,8 @@ public class UsersResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(User inputUser) {
         Response response;
+
+        inputUser.setPassword(Integer.toString(inputUser.getPassword().hashCode()));
 
         boolean isRequestValid = this.userService.validateUserParams(inputUser);
         if (!isRequestValid) {
