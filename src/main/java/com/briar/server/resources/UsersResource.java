@@ -33,6 +33,31 @@ public class UsersResource {
     }
 
     /**
+     * Type: GET
+     * Route: /users/{userId}
+     * Method used to see if a user exists
+     *
+     * @param phoneGeneratedId
+     * @return
+     * {
+     *     true / false
+     * }
+     */
+    @GET
+    @Path("/users/{userId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response exists(@PathParam("userId") String phoneGeneratedId) {
+        Response response;
+        boolean userExists = this.userService.doesUserExists(phoneGeneratedId);
+        response = Response.status(Response.Status.OK).entity(userExists)
+                               .build();
+        System.out.println(response);
+        return response;
+    }
+
+
+    /**
      * Type: PUT
      * Route: /users/{userId}
      * Method used to update the TCP information of a user. Example of
