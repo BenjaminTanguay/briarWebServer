@@ -1,6 +1,5 @@
 package com.briar.server.services;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.briar.server.constants.Constants;
 import com.briar.server.exception.ObjectDeletedException;
 import com.briar.server.exception.UserContactDoesntExistsException;
@@ -11,7 +10,6 @@ import com.briar.server.model.domainmodelclasses.UserContacts;
 import com.briar.server.model.returnedtobriarclasses.BriarUser;
 import com.briar.server.patterns.identitymap.UserContactsIdentityMap;
 import com.briar.server.patterns.unitofwork.UnitOfWork;
-import com.sun.corba.se.spi.servicecontext.UnknownServiceContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,16 +96,16 @@ public class UserContactServiceTest {
     @Test
     public void testPartialIdentityMapGettingPopulatedWithObjectsFromDatabase() throws ObjectDeletedException, UserContactDoesntExistsException {
         //Created clone users and change the information of the first 2 users
-        UserContact user1 = this.user1.clone();
-        user1.setFirstUserContactAcceptance(false);
-        UserContact user2 = this.user2.clone();
-        user2.setFirstUserContactAcceptance(true);
+        UserContact testUserContact1 = this.user1.clone();
+        testUserContact1.setFirstUserContactAcceptance(false);
+        UserContact testUserContact2 = this.user2.clone();
+        testUserContact2.setFirstUserContactAcceptance(true);
 
         UserContacts userContacts = new UserContacts();
 
         //Added local users contacts to identityMap of current user
-        userContacts.addContact(user1.getOtherUser(user.getPhoneGeneratedId()), user1);
-        userContacts.addContact(user2.getOtherUser(user.getPhoneGeneratedId()), user2);
+        userContacts.addContact(testUserContact1.getOtherUser(user.getPhoneGeneratedId()), testUserContact1);
+        userContacts.addContact(testUserContact2.getOtherUser(user.getPhoneGeneratedId()), testUserContact2);
 
         this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), userContacts);
 
@@ -129,27 +127,27 @@ public class UserContactServiceTest {
         Assert.assertEquals(otherUser1, userContacts4.getUserContact(user.getPhoneGeneratedId()));
         Assert.assertEquals(otherUser2, userContacts5.getUserContact(user.getPhoneGeneratedId()));
 
-        Assert.assertTrue(this.user1.equals(user1));
-        Assert.assertTrue(this.user2.equals(user2));
+        Assert.assertTrue(this.user1.equals(testUserContact1));
+        Assert.assertTrue(this.user2.equals(testUserContact2));
     }
 
     @Test
     public void testFullIdentityMapGettingPopulatedWithObjectsFromDatabase() throws ObjectDeletedException, UserContactDoesntExistsException {
         //Created clone users and change the information of the first 2 users
-        UserContact user1 = this.user1.clone();
-        user1.setFirstUserContactAcceptance(false);
-        UserContact user2 = this.user2.clone();
-        user2.setFirstUserContactAcceptance(true);
-        UserContact user3 = this.otherUser1.clone();
-        UserContact user4 = this.otherUser2.clone();
+        UserContact testUserContact1 = this.user1.clone();
+        testUserContact1.setFirstUserContactAcceptance(false);
+        UserContact testUserContact2 = this.user2.clone();
+        testUserContact2.setFirstUserContactAcceptance(true);
+        UserContact testUserContact3 = this.otherUser1.clone();
+        UserContact testUserContact4 = this.otherUser2.clone();
 
         UserContacts userContacts = new UserContacts();
 
         //Added all users contacts to identityMap of current user
-        userContacts.addContact(user1.getOtherUser(user.getPhoneGeneratedId()), user1);
-        userContacts.addContact(user2.getOtherUser(user.getPhoneGeneratedId()), user2);
-        userContacts.addContact(user3.getOtherUser(user.getPhoneGeneratedId()), user3);
-        userContacts.addContact(user4.getOtherUser(user.getPhoneGeneratedId()), user4);
+        userContacts.addContact(testUserContact1.getOtherUser(user.getPhoneGeneratedId()), testUserContact1);
+        userContacts.addContact(testUserContact2.getOtherUser(user.getPhoneGeneratedId()), testUserContact2);
+        userContacts.addContact(testUserContact3.getOtherUser(user.getPhoneGeneratedId()), testUserContact3);
+        userContacts.addContact(testUserContact4.getOtherUser(user.getPhoneGeneratedId()), testUserContact4);
 
         this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), userContacts);
 
@@ -171,8 +169,8 @@ public class UserContactServiceTest {
         Assert.assertEquals(otherUser1, userContacts4.getUserContact(user.getPhoneGeneratedId()));
         Assert.assertEquals(otherUser2, userContacts5.getUserContact(user.getPhoneGeneratedId()));
 
-        Assert.assertTrue(this.user1.equals(user1));
-        Assert.assertTrue(this.user2.equals(user2));
+        Assert.assertTrue(this.user1.equals(testUserContact1));
+        Assert.assertTrue(this.user2.equals(testUserContact2));
     }
 
     @Test
@@ -223,10 +221,10 @@ public class UserContactServiceTest {
 
     @Test
     public void testContactInIdentityMapAndInDB() throws ObjectDeletedException {
-        UserContacts testUserContact = new UserContacts();
-        testUserContact.addContact("second user 1", user1);
+        UserContacts testUserContacts = new UserContacts();
+        testUserContacts.addContact("second user 1", user1);
 
-        this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), testUserContact);
+        this.userContactsIdentityMap.addUserContacts(user.getPhoneGeneratedId(), testUserContacts);
 
         Assert.assertEquals(user1, this.userContactService.readUserContact(user.getPhoneGeneratedId(), "second user 1"));
     }
