@@ -286,65 +286,6 @@ public class UsersResource {
         }
     }
 
-    /**
-     * Type: POST
-     * Route: /hack/users/{userId}
-     * Temporary access point to get the user information. Will be deleted in order to make place to a user contact
-     * system instead. Expects:
-     * {
-     *     "password": "somePassword"
-     * }
-     * @param phoneGeneratedId
-     * @param inputUser
-     * @return
-     * {
-     *     phoneGeneratedId: "someId",
-     *     port: 1234,
-     *     ip: "123.123.123.123",
-     *     statusId: 2,
-     *     avatarId: 12
-     * }
-     */
-    @POST
-    @Path("/hack/users/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response returnUser(@PathParam("userId") String phoneGeneratedId, User inputUser) {
-        Response response;
-        inputUser.setPhoneGeneratedId(phoneGeneratedId);
-
-        boolean isRequestValid = this.userService.validateHackUserParams(inputUser);
-        if (!isRequestValid) {
-            // You can't update a user if the request isn't valid
-            // (some mandatory param aren't filled).
-            response = Response.status(Response.Status.BAD_REQUEST).build();
-            System.out.println(response + " Request isn't valid");
-            return response;
-        }
-
-        boolean userExists = this.userService.doesUserExists(phoneGeneratedId);
-        if (!userExists) {
-            // You can't create a user if it already exists
-            response = Response.status(Response.Status.BAD_REQUEST).build();
-            System.out.println(response + " User doesn't exist");
-            return response;
-        }
-
-        try {
-            User returnUser = this.userService.readUser(phoneGeneratedId);
-            BriarUser returnValue = this.userService.convertUserToBriarUser(returnUser);
-            // Here everything worked and we return the user created
-            response = Response.status(Response.Status.OK).entity(returnValue).build();
-            System.out.println(response);
-            return response;
-        } catch (Exception e) {
-            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            System.out.println("ERROR: " + e + "\n\n\n" + e.getStackTrace() + "\n\n\n");
-            System.out.println("RESPONSE: " + response);
-            return response;
-        }
-    }
-
     @Path("/users/{userId}/contact")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

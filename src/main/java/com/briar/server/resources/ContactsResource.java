@@ -1,11 +1,8 @@
 package com.briar.server.resources;
 
-import com.briar.server.exception.ObjectDeletedException;
-import com.briar.server.exception.UserContactDoesntExistsException;
 import com.briar.server.mapper.UserContactMapper;
 import com.briar.server.mapper.UserMapper;
 import com.briar.server.model.domainmodelclasses.User;
-import com.briar.server.model.domainmodelclasses.UserContact;
 import com.briar.server.model.returnedtobriarclasses.BriarUser;
 import com.briar.server.services.UserContactService;
 import com.briar.server.services.UserService;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Component
 @Path("/")
@@ -33,6 +29,26 @@ public class ContactsResource {
         this.userContactService = new UserContactService(userContactMapper, userMapper);
     }
 
+
+    /**
+     * Type: POST
+     * Route: /users/{userId}/contacts/{targetId}
+     * Temporary access point to get the user information. Will be deleted in order to make place to a user contact
+     * system instead. Expects:
+     * {
+     *     "password": "somePassword"
+     * }
+     * @param phoneGeneratedId
+     * @param inputUser
+     * @return
+     * {
+     *     phoneGeneratedId: "someId",
+     *     port: 1234,
+     *     ip: "123.123.123.123",
+     *     statusId: 2,
+     *     avatarId: 12
+     * }
+     */
     @POST
     @Path("/{targetId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -80,14 +96,5 @@ public class ContactsResource {
             System.out.println("RESPONSE: " + response);
             return response;
         }
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateContactList(@PathParam("userId") String userId) throws ObjectDeletedException, UserContactDoesntExistsException {
-        Response response = null;
-        List<BriarUser> contactList = this.userContactService.getUpdatedContactList(userId);
-        return response.status(Response.Status.OK).entity(contactList).build();
     }
 }
