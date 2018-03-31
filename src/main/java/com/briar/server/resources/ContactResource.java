@@ -151,16 +151,6 @@ public class ContactResource {
 
     }
 
-
-
-//
-//    @POST
-//    @Path("/{contactId}")
-//    public Response createContact(@PathParam("contactId") String targetContact, @PathParam("userId") String targetUser) {
-//        return Response.status(Response.Status.CREATED).entity(this.userMapper.findAll()).build();
-//
-//    }
-
     private class UnilateralUserContact {
         private String userName;
         private long id;
