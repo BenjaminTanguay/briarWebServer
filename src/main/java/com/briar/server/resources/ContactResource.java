@@ -46,6 +46,7 @@ public class ContactResource {
     public Response generateContact(@PathParam("userId") String userId, AddContactRequest contactRequest) {
 
         Response response;
+        contactRequest.setPassword((Integer.toString(contactRequest.getPassword().hashCode())));
 
         boolean isRequestValid = this.userContactService.validateContactRequest(contactRequest);
         if (!isRequestValid) {
