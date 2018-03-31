@@ -81,13 +81,4 @@ public class ContactsResource {
             return response;
         }
     }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateContactList(@PathParam("userId") String userId) throws ObjectDeletedException, UserContactDoesntExistsException {
-        Response response = null;
-        List<BriarUser> contactList = this.userContactService.getUpdatedContactList(userId);
-        return response.status(Response.Status.OK).entity(contactList).build();
-    }
 }
