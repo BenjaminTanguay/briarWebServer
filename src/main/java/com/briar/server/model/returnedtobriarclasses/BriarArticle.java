@@ -7,6 +7,9 @@ public class BriarArticle {
     String title;
     String[] body;
 
+    public BriarArticle() {
+    }
+
     public BriarArticle(String author, String publicationDate,
                         String title, String[] body) {
         this.author = author;

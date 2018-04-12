@@ -1,6 +1,7 @@
 package com.briar.server.model.domainmodelclasses;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Article {
 
@@ -8,17 +9,18 @@ public class Article {
     String author;
     String title;
     String body;
+    long addedBy;
 
     public Article() {
 
     }
 
-    public Article(Date publicationDate, String author, String title,
-                   String body) {
+    public Article(Date publicationDate, String author, String title, String body, long addedBy) {
         this.publicationDate = publicationDate;
         this.author = author;
         this.title = title;
         this.body = body;
+        this.addedBy = addedBy;
     }
 
     public Date getPublicationDate() {
@@ -53,6 +55,32 @@ public class Article {
         this.body = body;
     }
 
+    public long getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(long addedBy) {
+        this.addedBy = addedBy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Article article = (Article) o;
+        return addedBy == article.addedBy &&
+                Objects.equals(publicationDate, article.publicationDate) &&
+                Objects.equals(author, article.author) &&
+                Objects.equals(title, article.title) &&
+                Objects.equals(body, article.body);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(publicationDate, author, title, body, addedBy);
+    }
+
     @Override
     public String toString() {
         return "Article{" +
@@ -60,47 +88,7 @@ public class Article {
                 ", author='" + author + '\'' +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
+                ", addedBy=" + addedBy +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Article)) {
-            return false;
-        }
-
-        Article article = (Article) o;
-
-        if (getPublicationDate() != null ?
-                !getPublicationDate().equals(article.getPublicationDate()) :
-                article.getPublicationDate() != null) {
-            return false;
-        }
-        if (getAuthor() != null ? !getAuthor().equals(article.getAuthor()) :
-                article.getAuthor() != null) {
-            return false;
-        }
-        if (getTitle() != null ? !getTitle().equals(article.getTitle()) :
-                article.getTitle() != null) {
-            return false;
-        }
-        return getBody() != null ? getBody().equals(article.getBody()) :
-                article.getBody() == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result =
-                getPublicationDate() != null ? getPublicationDate().hashCode() :
-                        0;
-        result = 31 * result +
-                (getAuthor() != null ? getAuthor().hashCode() : 0);
-        result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
-        result = 31 * result + (getBody() != null ? getBody().hashCode() : 0);
-        return result;
     }
 }

@@ -1,9 +1,7 @@
 package com.briar.server.mapper;
 
 import com.briar.server.model.domainmodelclasses.Article;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
