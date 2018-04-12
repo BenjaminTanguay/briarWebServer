@@ -1,6 +1,8 @@
 package com.briar.server.config;
 
+import com.briar.server.resources.ArticleResource;
 import com.briar.server.resources.ContactResource;
+import com.briar.server.resources.ContactsResource;
 import com.briar.server.resources.UsersResource;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
@@ -22,6 +24,8 @@ public class WebServerConfiguration extends ResourceConfig {
     public void jerseyConfiguration() {
         register(ContactResource.class);
         register(UsersResource.class);
+        register(ContactsResource.class);
+        register(ArticleResource.class);
     }
 
     private void configureSwagger() {
