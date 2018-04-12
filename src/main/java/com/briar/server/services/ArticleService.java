@@ -97,7 +97,7 @@ public class ArticleService {
 
         if (body != null) {
             for (String content : body) {
-                if (content.isEmpty()) {
+                if (content == null || content.isEmpty()) {
                     hasBody = false;
                 }
             }
