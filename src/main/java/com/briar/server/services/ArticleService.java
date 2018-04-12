@@ -4,7 +4,6 @@ import com.briar.server.mapper.ArticleMapper;
 import com.briar.server.model.domainmodelclasses.Article;
 import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.returnedtobriarclasses.BriarArticle;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,13 +22,13 @@ public class ArticleService {
     public List<BriarArticle> convertAllArticles(List<Article> articles){
         List<BriarArticle> briarArticles = new ArrayList<>();
         for(Article article: articles) {
-            briarArticles.add(ArticleService.convertArticleToBriarArticle
+            briarArticles.add(convertArticleToBriarArticle
                     (article));
         }
         return briarArticles;
     }
 
-    public static BriarArticle convertArticleToBriarArticle(Article article) {
+    public BriarArticle convertArticleToBriarArticle(Article article) {
         String author = article.getAuthor();
         String publicationDate = parseDate(article.getPublicationDate());
         String title = article.getTitle();
