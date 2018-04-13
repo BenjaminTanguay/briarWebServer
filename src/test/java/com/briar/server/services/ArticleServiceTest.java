@@ -4,6 +4,7 @@ import com.briar.server.mapper.ArticleMapper;
 import com.briar.server.model.domainmodelclasses.Article;
 import com.briar.server.model.domainmodelclasses.User;
 import com.briar.server.model.returnedtobriarclasses.BriarArticle;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,7 +50,13 @@ public class ArticleServiceTest {
 
         this.article.setAddedBy(id);
         this.article.setAuthor("Benjamin");
-        Date date = new Date(1134363600000L);
+        Date date
+        if (SystemUtils.IS_OS_LINUX){
+            date = new Date(1134345600000L);
+        }
+        else{
+            date = new Date(1134363600000L);
+        }
         this.article.setPublicationDate(date);
 
         this.user = new User();
