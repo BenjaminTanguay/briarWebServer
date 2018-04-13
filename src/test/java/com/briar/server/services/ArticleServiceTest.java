@@ -50,7 +50,7 @@ public class ArticleServiceTest {
 
         this.article.setAddedBy(id);
         this.article.setAuthor("Benjamin");
-        Date date
+        Date date;
         if (SystemUtils.IS_OS_LINUX){
             date = new Date(1134345600000L);
         }
